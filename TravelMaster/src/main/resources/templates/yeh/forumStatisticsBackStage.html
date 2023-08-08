@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Forum backstage</title>
+</head>
+
+<body>
+	<div th:replace="~{layout/dashboardHeader}"></div>
+	<main>
+		<div class="container-fluid px-4">
+			<h1 class="mt-4">論壇數據分析</h1>
+			<hr>
+			<div class="card mb-4">
+				<div class="card-header">
+					<i class="fas fa-table me-1"></i>
+				</div>
+				<div class="card-body">
+
+					<canvas id="myChart"></canvas>
+
+
+
+				</div>
+
+			</div>
+		</div>
+
+
+	</main>
+	<script th:src="@{/js/yeh/axios.min.js}"></script>
+
+	<div th:replace="~{layout/dashboardFooter}"></div>
+
+	<script>
+		likeChart();
+		function likeChart() {
+
+
+
+
+
+
+		}
+
+	</script>
+
+</body>
+
+</html>

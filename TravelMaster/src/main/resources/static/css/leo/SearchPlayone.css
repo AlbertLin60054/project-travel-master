@@ -1,0 +1,68 @@
+@charset "UTF-8";
+
+        .searchPlayone {
+            display:flex;
+            justify-content:center;
+            align-items:center;
+        }
+
+        legend {
+            color: rgb(11, 53, 240);
+            /* text-align: center; */
+            margin-left: 65px;
+        }
+
+        strong {
+            color: red;
+        }
+
+        .searchst1st1 {
+            width: 450px;
+            /* border-bottom: 3px dashed rgb(77, 77, 72); */
+            margin: 10px;
+            padding: 5px;
+        }
+
+        .sub {
+            width: 450px;
+            margin: 20px;
+            text-align: center;
+        }
+
+        .searcht1 {
+            width: 100px;
+            float: left;
+            text-align: right;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+		
+		.submit-btn {
+		    border: 0;
+		    background-color: #003C9D;
+		    color: #fff;
+		    border-radius: 10px;
+		    cursor: pointer;
+		    padding: 5px 10px;
+		    font-size: 10px;
+		}
+		
+		.submit-btn{
+		    border: none;
+		    background-color: #9E9E9E;
+		    color: #fff;
+		    border-radius: 10px;
+		    cursor: pointer;
+		    padding: 5px 10px;
+		    font-size: 10px;
+		}
+		
+		.submit-btn:hover,
+		.submit-btn:hover {
+		    color: #003C9D;
+		    background-color: #fff;
+		    border: 2px #003C9D solid;
+		}

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style type="text/css">
+.leo {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+fieldset {
+	width: 500px;
+	border: 1px solid lightblue;
+	border-radius: 2px;
+	margin: 10px;
+}
+
+legend {
+	color: rgb(11, 53, 240);
+	margin-left: 65px;
+}
+
+strong {
+	color: red;
+}
+
+.st1 {
+	width: 450px;
+	margin: 10px;
+	padding: 5px;
+	padding-left: 125px;
+}
+
+.sub {
+	width: 450px;
+	margin: 20px;
+	text-align: center;
+}
+
+.t1 {
+	width: 100px;
+	float: left;
+	text-align: right;
+}
+
+textarea {
+	resize: none;
+}
+
+.sub input[type="submit"] {
+	border: 0;
+	background-color: #003C9D;
+	color: #fff;
+	border-radius: 10px;
+	cursor: pointer;
+	padding: 5px 10px;
+	font-size: 20px;
+}
+
+.sub input {
+	border: none;
+	background-color: #9E9E9E;
+	color: #fff;
+	border-radius: 10px;
+	cursor: pointer;
+	padding: 5px 10px;
+	font-size: 20px;
+}
+
+.sub input:hover, .sub input:hover {
+	color: #003C9D;
+	background-color: #fff;
+	border: 2px #003C9D solid;
+}
+
+#preview {
+	max-width: 300px;
+	height: 130px;
+	overflow-x: auto;
+	white-space: nowrap;
+}
+
+#preview img {
+	min-width: 100px;
+	max-height: 100px;
+	margin-right: 5px;
+}
+
+.img-container {
+	position: relative;
+	display: inline-block;
+	margin-right: 5px;
+}
+
+.img-container img {
+	max-width: 300px;
+	max-height: 100px;
+}
+
+.delete-btn {
+	position: absolute;
+	top: 0;
+	right: 0;
+	background: gray;
+	color: white;
+	border-radius: 50%;
+	cursor: pointer;
+	padding: 0px 5px;
+}
+</style>
+</head>
+<body>
+	<div th:replace="~{leo/client/indexNavbar}"></div>
+	<main style="background-color: #dae0e7">
+		<div class="container">
+			<!-- 首頁內容，目前沒東西 -->
+			<section class="h-100">
+				<div
+					class="row d-flex justify-content-center align-items-center h-100">
+					<div class="col">
+						<div class="card card-registration my-4">
+							<div class="row g-0">
+								<div class="col-xl-6 d-none d-xl-block"
+									style="position: relative;">
+									<video autoplay loop muted class="custom-video" poster=""
+										style="width: 100%; height: 100%; border-top-left-radius: .25rem; border-bottom-left-radius: .25rem;">
+										<source th:src="@{video/pagevideo.mp4}" type="video/mp4">
+									</video>
+								</div>
+								<div class="col-xl-6">
+									<div class="card-body p-md-5 text-black">
+										<h3 class="mb-5 text-uppercase"
+											style="height: 10px; margin-top: -20px;">旅伴申請</h3>
+										<form th:action="@{/playone/registered}" method="post"
+											enctype="multipart/form-data" id="subbb" onsubmit="return confirmSubmission()">
+
+											<div class="form-outline mb-4">
+												<label class="form-label" for="playonePhoto">照片</label> <input
+													type="file" id="playonePhoto" name="playonePhoto" multiple />
+												<div id="preview"></div>
+											</div>
+											<div class="form-outline mb-4">
+												<label class="form-label" for="playoneName">姓名</label> <input
+													type="text" id="playoneName" name="playoneName"
+													class="form-control form-control-lg" placeholder="請輸入真實姓名"
+													required maxlength="20" autocomplete="off" />
+											</div>
+											<div class="form-outline mb-4">
+												<label class="form-label " for="playoneNick">暱稱</label> <input
+													type="text" id="playoneNick" name="playoneNick"
+													class="form-control form-control-lg checknick" required
+													maxlength="15" autocomplete="off" />
+											</div>
+											<div id="nickNameStatus"
+												style="display: flex; justify-content: center; align-items: center; margin: 0;"></div>
+											<div
+												class="d-md-flex justify-content-start align-items-center mb-4 py-2">
+												<h6 class="mb-0 me-4">性別</h6>
+												<div class="form-check form-check-inline mb-0 me-4">
+													<input class="form-check-input" type="radio"
+														name="playoneSex" id="m1" value="男" required /> <label
+														class="form-check-label" for="m1"><i
+														class="fa-solid fa-mars"></i>&nbspMale</label>
+												</div>
+												<div class="form-check form-check-inline mb-0 me-4">
+													<input class="form-check-input" type="radio"
+														name="playoneSex" id="f1" value="女" /> <label
+														class="form-check-label" for="f1">&nbsp&nbsp&nbsp<i
+														class="fa-solid fa-venus"></i>&nbspFemale
+													</label>
+												</div>
+											</div>
+
+											<div class="form-outline mb-4">
+												<label class="form-label" for="playoneBirth">生日</label> <input
+													type="text" id="playoneBirth" name="playoneBirth"
+													class="form-control form-control-lg"
+													placeholder="西元年月日 ex:19960607" required maxlength="8"
+													autocomplete="off" />
+											</div>
+
+											<div class="form-outline mb-4">
+												<label class="form-label" for="playoneInterest">一句話</label>
+												<input type="text" id="playoneInterest"
+													name="playoneInterest" class="form-control form-control-lg"
+													placeholder="20字以內個人標籤" required maxlength="20"
+													autocomplete="off" />
+											</div>
+
+											<div class="form-outline mb-4">
+												<label class="form-label" for="playoneIntroduce">關於我</label>
+												<input type="text" id="playoneIntroduce"
+													name="playoneIntroduce"
+													class="form-control form-control-lg"
+													placeholder="200字以內的自我介紹" required maxlength="200"
+													autocomplete="off" />
+											</div>
+											<input type="hidden" id="deletedImages" name="deletedImages">
+											<input type="hidden" name="memberSeq" th:value="${session.mbsession.memberSeq}">
+											<div class="d-flex justify-content-end pt-3">
+												<input type="reset"
+													class="btn btn-warning btn-lg ms-2 reset" value="清除"></input>
+												<input type="submit"
+													class="btn btn-warning btn-lg ms-2 registered" value="註冊"></input>
+											</div>
+										</form>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</main>
+
+	<div th:replace="~{leo/client/indexFooter}"></div>
+	<!-- JAVASCRIPT FILES -->
+
+	<script th:inline="javascript">
+	
+	function confirmSubmission() {
+	  return confirm("確定提交申請，並等待審核");
+	}
+	
+	
+		// 當文檔完全加載後執行JavaScript代碼
+$(document).ready(function () {
+
+  // 監聽陪玩暱稱輸入框的失焦事件
+  $(".checknick").blur(function () {
+    var playoneNick = $(this).val();
+    if (playoneNick.trim() === "") {
+      // 檢查暱稱是否為空
+      // 如果暱稱為空，顯示錯誤提示並禁用提交按鈕
+      $("#nickNameStatus").html(
+        '<span class="text-danger" style="color:red;">請輸入暱稱</span>'
+      );
+      $('input[type="submit"]').attr("disabled", true);
+      return; // 直接返回，不發送AJAX請求
+    }
+
+    // 使用AJAX向指定的URL發送POST請求
+    $.ajax({
+      url: "/TM/CNController",
+      method: "POST",
+      data: {
+        playoneNick: playoneNick,
+      },
+      success: function (data) {
+        if (data != "0") {
+          // 如果暱稱已存在，顯示錯誤提示並禁用提交按鈕
+          $("#nickNameStatus").html(
+            '<span class="text-danger" style="color:red;">暱稱已存在</span>'
+          );
+          $('input[type="submit"]').attr("disabled", true);
+        } else {
+          // 如果暱稱可用，顯示成功提示並啟用提交按鈕
+          $("#nickNameStatus").html(
+            '<span class="text-success" style="color:green;">暱稱可用</span>'
+          );
+          $('input[type="submit"]').attr("disabled", false);
+        }
+      },
+    });
+  });
+  
+  var deletedImageIndices = [];
+
+  //新的函数，使用 Promise 和 FileReader 读取文件
+  function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+      let reader = new FileReader();
+
+      reader.onload = (e) => {
+        resolve(e.target.result);
+      };
+
+      reader.onerror = (e) => {
+        reject(e.target.error);
+      };
+
+      reader.readAsDataURL(file);
+    });
+  }
+  
+  
+  //宣告一個新的陣列selectedFiles，用於存儲上傳的文件對象。
+  var selectedFiles = [];
+
+  $("#playonePhoto").change(async function (e) {
+    var files = e.target.files; //從事件對象e中取得上傳的文件列表。
+    for (var i = 0; i < files.length; i++) {
+      //使用for迴圈遍歷所有上傳的文件。
+      var file = files[i];
+      var imageType = /image.*/; //檢查文件的類型是否為圖像類型。
+      if (!file.type.match(imageType)) continue; //如果不是，則跳過該文件並繼續處理下一個文件。
+
+
+		//使用新的函数读取文件，这个函数会返回一个 Promise
+      let fileContent = await readFileAsDataURL(file);
+      //检查文件是否已经在 deletedImageIndices 数组中
+      let index = deletedImageIndices.indexOf(fileContent);
+      //如果在，那么将它从 deletedImageIndices 数组中删除
+      if (index > -1) {
+        deletedImageIndices.splice(index, 1);
+        document.getElementById("deletedImages").value = deletedImageIndices.join(",");
+        
+      }
+      
+      //建立一個新的img元素並設定其類別為preview-img，並將文件對象設定為其文件屬性。
+      var img = document.createElement("img");
+      img.className = "preview-img";
+      img.file = file;
+
+      //建立一個刪除按鈕，並將文件、圖像和索引作為參數傳遞給createDeleteButton函數。
+      var deleteBtn = createDeleteButton(file, img, i);
+      //建立一個新的div元素作為圖像容器，並添加圖像和刪除按鈕元素。
+      var imgContainer = document.createElement("div");
+      imgContainer.className = "img-container";
+      imgContainer.appendChild(img);
+      imgContainer.appendChild(deleteBtn);
+      //將圖像容器添加到預覽區域，並將文件對象添加到selectedFiles陣列。
+      document.getElementById("preview").appendChild(imgContainer);
+      selectedFiles.push({ file: file, deleted: false });
+
+      //建立一個新的FileReader對象來讀取文件的內容，並設定當讀取操作完成後要執行的函數。這個函數將文件的內容設定為圖像元素的來源。
+      var reader2 = new FileReader();
+      reader2.onload = (function (aImg) {
+        return function (e) {
+          aImg.src = e.target.result;
+        };
+      })(img);
+      reader2.readAsDataURL(file);
+    }
+  });
+  //在每次刪除圖片時，將被刪除的圖片存入deletedImageIndices陣列中，這個陣列將在提交表單前使用。
+  var deletedImageIndices = [];
+
+  //函数用于创建一个删除按钮。该函数接受三个参数：file（文件对象）、img（图片对象）和 index（索引值）。
+  function createDeleteButton(file, img, index) {
+    var deleteBtn = document.createElement("span");
+    deleteBtn.className = "delete-btn";
+    deleteBtn.innerText = "X";
+
+    deleteBtn.addEventListener("click", async function (e) {
+      var imgContainers = document.getElementById("preview").children;
+      var imgContainer = e.target.parentNode;
+      var index = Array.from(imgContainers).indexOf(imgContainer);
+
+      if (index > -1) {
+        // 使用新的函数读取文件，这个函数会返回一个 Promise
+        let fileContent = await readFileAsDataURL(selectedFiles[index].file);
+
+        deletedImageIndices.push(fileContent);
+        document.getElementById("deletedImages").value = deletedImageIndices.join(",");
+        console.log(deletedImageIndices);
+
+        selectedFiles.splice(index, 1);
+        e.target.parentNode.remove();
+      }
+    });
+
+    return deleteBtn;
+  }
+  	$(".reset").click(function () {
+      $("#preview").empty();
+      $("#nickNameStatus").empty();
+    });
+  
+  
+  $("#subbb").submit(function (e) {
+    if (selectedFiles.length === 0) {
+      // selectedFiles 是你在上一個JavaScript代碼中用於存儲上傳的照片的變量
+      e.preventDefault();
+      alert("請至少上傳一張照片");
+    }
+  });
+});
+
+	</script>
+</body>
+</html>

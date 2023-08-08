@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+</head>
+<body>
+	<th:block th:each="playone:${playone}">
+		<div class="col" style="width: 25%">
+			<div class="card shadow-sm " style="border-radius: 20px;">
+				<!-- 建立輪播圖元素，id 根據 playone 的 id 來動態產生 -->
+				<div th:id="'carouselExampleIndicators'+${playone.PlayoneId}"
+					class="carousel slide photo-div">
+					<!-- 輪播圖內容 -->
+					<div class="carousel-inner" style="border-radius: 15px;">
+						<th:block th:each="img, stat : ${playone.playoneImgs}">
+							<div class="carousel-item"
+								th:class="${stat.first} ? 'carousel-item active' : 'carousel-item'">
+								<a th:href="@{/playone/byId(id=${playone.PlayoneId})}"
+									th:data-playone-id="${playone.PlayoneId}"><img
+									th:src="'data:image/jpeg;base64,' + ${img.base64Photo}"
+									class="d-block w-100 img leoimg" alt="Playone photo"></a>
+							</div>
+						</th:block>
+					</div>
+				</div>
+				<div class="card-body">
+					<div class="nic" id="nic" name="nic"
+						th:text="${playone.playoneNick}"
+						style="width: 100%; display: block; color: #0e548f; font-size: 30px; font-weight: bold; display: flex; justify-content: center; align-items: center;"></div>
+					<div class="age" id="age" name="age"
+						th:text="'🎂 '+${playone.age}+' 歲'"
+						style="width: 100%; display: flex; justify-content: center; align-items: center; font-weight: bold;"></div>
+					<div class="zodiac" id="zodiac" name="zodiac"
+						th:text="${playone.Zodiac}"
+						style="width: 100%; display: flex; justify-content: center; align-items: center; font-weight: bold;"></div>
+					<div class="ins" id="ins" name="ins"
+						th:text="${playone.playoneInterest}"
+						style="display: flex; justify-content: center; align-items: center; width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 100%; color: #dd820c; font-size: 20px; font-weight: bold;"></div>
+				</div>
+			</div>
+		</div>
+	</th:block>
+	<br />
+	<div>
+		<span class="leoLastPage leonickPage"></span>
+	</div>
+</body>
+</html>

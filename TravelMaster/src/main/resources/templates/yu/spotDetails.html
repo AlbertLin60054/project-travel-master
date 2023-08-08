@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<title>景點瀏覽</title>
+</head>
+
+<style>
+.overlay {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 60px;
+	height: 40px;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	border-radius: 8px;
+	padding: 0 10px;
+}
+
+.overlay i {
+	color: white;
+	margin-right: 5px;
+}
+
+.map-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 400px; /* Adjust the height as needed */
+	margin: 0;
+	padding: 0;
+	justify-content: center;
+	align-items: center;
+	align-items: center;
+}
+</style>
+
+<body>
+	<div th:replace="~{layout/indexHeader}"></div>
+	<main>
+		<div class="container my-5"
+			style="background-color: rgb(241, 241, 241); padding: 60px">
+
+			<!-- Breadcrumb -->
+			<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+				<div class="d-flex justify-content-between align-items-center">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item active">景點<a href="toSpot"></a></li>
+						<li class="breadcrumb-item active">全部景點</li>
+						<li class="breadcrumb-item active" aria-current="page"><a
+							href="#"></a></li>
+					</ol>
+
+					<!-- BtnForSearchForm -->
+					<button id="showSearchFormBtn" class="btn btn-info">
+						<i id="iconOpen" class="fas fa-search"></i> <span id="textOpen">進階搜尋</span>
+					</button>
+				</div>
+			</nav>
+			<div class="container "
+				style="background-color: white; padding: 40px">
+
+				<!-- SearchForm -->
+				<div class="container" id="searchFormContainer"
+					style="display: none;">
+					<form id="searchForm" th:action="@{/searchSpots}">
+						<div class="row p-3 mb-2 bg-light border border-2 rounded">
+							<div class="col-md-2 mb-3">
+								<label for="cityRegion">地區</label> <select class="form-select"
+									id="cityRegion" name="cityRegion">
+									<option disabled selected>選擇地區</option>
+									<option value="北部">北部</option>
+									<option value="中部">中部</option>
+									<option value="南部">南部</option>
+									<option value="東部">東部</option>
+								</select>
+							</div>
+							<div class="col-md-2 mb-3">
+								<label for="cityName">縣市</label> <select class="form-select"
+									id="cityName" name="cityName">
+									<option disabled selected>選擇縣市</option>
+									<option value="台北市">台北市</option>
+									<option value="新北市">新北市</option>
+									<option value="桃園市">桃園市</option>
+									<option value="台中市">台中市</option>
+									<option value="台南市">台南市</option>
+									<option value="高雄市">高雄市</option>
+									<option value="基隆市">基隆市</option>
+									<option value="新竹市">新竹市</option>
+									<option value="嘉義市">嘉義市</option>
+									<option value="新竹縣">新竹縣</option>
+									<option value="苗栗縣">苗栗縣</option>
+									<option value="彰化縣">彰化縣</option>
+									<option value="南投縣">南投縣</option>
+									<option value="雲林縣">雲林縣</option>
+									<option value="嘉義縣">嘉義縣</option>
+									<option value="屏東縣">屏東縣</option>
+									<option value="宜蘭縣">宜蘭縣</option>
+									<option value="花蓮縣">花蓮縣</option>
+									<option value="台東縣">台東縣</option>
+								</select>
+							</div>
+							<div class="col-md-2 mb-3">
+								<label for="spotType">類型</label> <select class="form-select"
+									id="spotType" name="spotType">
+									<option disabled selected>選擇類型</option>
+									<option th:value="室內">室內</option>
+									<option th:value="室外">室外</option>
+								</select>
+							</div>
+							<div class="col-md-2 mb-3">
+								<label for="txtQuery">關鍵字</label> <input name="txtQuery"
+									type="text" id="txtQuery" class="form-control"
+									placeholder="請輸入關鍵字">
+							</div>
+							<div class="col-md-2 mb-3" style="margin-top: 20px;">
+								<button type="submit" name="txtsubmit" class="btn btn-secondary"
+									title="搜尋" aria-label="搜尋">
+									<i class="bi bi-search"></i>
+								</button>
+							</div>
+						</div>
+					</form>
+				</div>
+				<hr>
+				<div class="container">
+					<div class="row">
+						<div class="col">
+							<div class="bg-light">
+
+								<!-- Cards -->
+								<div class="card mb-3"
+									style="width: 100%; margin-bottom: 20px; padding: 20px;"
+									data-longitude="${spot.longitude}"
+									data-latitude="${spot.latitude}">
+
+
+									<div class="row g-0">
+										<div class="col-md-4">
+											<img class="card-img"
+												th:src="@{/images/yu/{filename}(filename=${spot?.spotPic})}"
+												alt="Spot Image" style="width: 100%; height: auto;">
+										</div>
+										<div class="col-md-8">
+											<div class="card-body">
+												<h2 class="card-title" th:text="${spot.spotName}"></h2>
+
+												<div class="subtitle sort-hashtag hashtag"
+													style="margin-bottom: 10px;">
+													<span class="card-text" th:text="${spot.cityRegion}"
+														style="display: inline-block; background-color: #f1f1f1; padding: 5px 10px; margin-right: 10px;"></span>
+													<span class="card-text" th:text="${spot.cityName}"
+														style="display: inline-block; background-color: #f1f1f1; padding: 5px 10px;"></span>
+												</div>
+
+												<p class="card-text" th:text="${spot.spotInfo}"></p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<br>
+						<div class="container">
+							<div class="row">
+								<h5>景點位置</h5>
+								<div class="col">
+									<div style="background-color: rgb(241, 241, 241);">
+										<div class="map-container">
+											<div id="map" style="width: 90%; height: 90%; margin: 0;"
+												th:attr="data-longitude=${spot.longitude}, data-latitude=${spot.latitude}">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<br>
+
+					</div>
+
+					<!-- Cards -->
+					<div class="container">
+						<br>
+						<hr>
+						<br>
+						<h3>周邊景點</h3>
+						<br>
+
+
+						<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4">
+							<div class="col-md-4" th:each="relatedSpot : ${relatedSpots}">
+								<a
+									th:href="@{/spotDetails/{spotNo}(spotNo=${relatedSpot.spotNo})}"
+									class="card-link">
+									<div class="card">
+										<img class="card-img-top"
+											th:src="@{/images/yu/{filename}(filename=${relatedSpot?.spotPic})}"
+											width="200" height="250" alt="spotPic"
+											onmouseover="handleHover(this)"
+											onmouseout="handleHoverOut(this)">
+										<div class="overlay" style="color: white;">
+											<i class="fas fa-eye mr-1"></i> <span
+												th:text="${relatedSpot.clickCount}" class="click-count"></span>
+										</div>
+										<div class="card-body">
+											<h5 class="card-title" th:text="${relatedSpot.spotName}"></h5>
+											<p class="card-text"
+												th:text="${relatedSpot.spotInfo?.length() > 50 ? relatedSpot.spotInfo?.substring(0, 15) + '...' : relatedSpot.spotInfo}">
+											</p>
+										</div>
+									</div>
+								</a>
+							</div>
+						</div>
+
+
+						<br>
+						<hr>
+						<br>
+						<h3>最多點閱</h3>
+						<br>
+
+						<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4">
+							<div class="col mb-4" th:each="clickedSpot : ${mostClickedSpots}">
+								<a
+									th:href="@{/spotDetails/{spotNo}(spotNo=${clickedSpot.spotNo})}"
+									class="card-link">
+									<div class="card">
+										<img class="card-img-top"
+											th:src="@{/images/yu/{filename}(filename=${clickedSpot.spotPic})}"
+											width="200" height="250" alt="spotPic"
+											onmouseover="handleHover(this)"
+											onmouseout="handleHoverOut(this)">
+										<div class="overlay" style="color: white;">
+											<i class="fas fa-eye mr-1"></i> <span
+												th:text="${clickedSpot.clickCount}" class="click-count"></span>
+										</div>
+										<div class="card-body">
+											<h5 class="card-title" th:text="${clickedSpot.spotName}"></h5>
+											<p class="card-text"
+												th:text="${clickedSpot.spotInfo?.length() > 50 ? clickedSpot.spotInfo?.substring(0, 15) + '...' : clickedSpot.spotInfo}">
+											</p>
+										</div>
+									</div>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</main>
+
+	<div th:replace="~{layout/indexFooter}"></div>
+	<script th:inline="javascript">
+		var showSearchFormBtn = document.getElementById('showSearchFormBtn');
+		var searchFormContainer = document.getElementById('searchFormContainer');
+		var SearchFormVisible = false;
+
+		showSearchFormBtn.addEventListener('click', function () {
+			if (SearchFormVisible) {
+				searchFormContainer.style.display = 'none';
+				document.getElementById('iconOpen').classList.add('fa-search');
+				document.getElementById('iconOpen').classList.remove('fa-times');
+				document.getElementById('textOpen').textContent = '進階搜尋';
+				SearchFormVisible = false;
+			} else {
+				searchFormContainer.style.display = 'block';
+				document.getElementById('iconOpen').classList.add('fa-times');
+				document.getElementById('iconOpen').classList.remove('fa-search');
+				document.getElementById('textOpen').textContent = '關閉';
+				SearchFormVisible = true;
+			}
+		});
+
+		function handleHover(element) {
+			element.style.filter = "brightness(120%)";
+		}
+
+		function handleHoverOut(element) {
+			element.style.filter = "brightness(100%)";
+		}
+
+  let map;
+  let marker;
+  let infoWindow;
+
+  function initMap() {
+    const mapDiv = document.getElementById('map');
+    const longitude = mapDiv.getAttribute('data-longitude');
+    const latitude = mapDiv.getAttribute('data-latitude');
+    const spotName = mapDiv.getAttribute('data-spotname');
+    const spotInfo = mapDiv.getAttribute('data-spotinfo');
+
+    map = new google.maps.Map(mapDiv, {
+      center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
+      zoom: 20, // Adjust the zoom level as needed
+    });
+
+    if (longitude && latitude) {
+      marker = new google.maps.Marker({
+        position: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
+        map: map
+      });
+
+      infoWindow = new google.maps.InfoWindow({
+        content: '<h3>' + spotName + '</h3><p>' + spotInfo + '</p>'
+      });
+
+      marker.addListener('click', function() {
+        infoWindow.open(map, marker);
+      });
+
+      map.setCenter(marker.getPosition());
+      map.setZoom(20); // Adjust the zoom level as needed
+    }
+  }
+
+
+
+	</script>
+	<script async
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAzVNbxZ-J4UILIJfQT1Iw5niC8gr04Ss4&libraries=places&callback=initMap">
+		</script>
+</body>
+
+</html>

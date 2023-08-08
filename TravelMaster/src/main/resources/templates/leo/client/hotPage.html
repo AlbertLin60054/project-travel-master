@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>和 你 一 起 旅 行</title>
+<style>
+.bd-placeholder-img {
+	font-size: 1.125rem;
+	text-anchor: middle;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+}
+
+@media ( min-width : 768px) {
+	.bd-placeholder-img-lg {
+		font-size: 3.5rem;
+	}
+}
+
+.b-example-divider {
+	width: 100%;
+	height: 3rem;
+	background-color: rgba(0, 0, 0, .1);
+	border: solid rgba(0, 0, 0, .15);
+	border-width: 1px 0;
+	box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em
+		rgba(0, 0, 0, .15);
+}
+
+.b-example-vr {
+	flex-shrink: 0;
+	width: 1.5rem;
+	height: 100vh;
+}
+
+.bi {
+	vertical-align: -.125em;
+	fill: currentColor;
+}
+
+.nav-scroller {
+	position: relative;
+	z-index: 2;
+	height: 2.75rem;
+	overflow-y: hidden;
+}
+
+.nav-scroller .nav {
+	display: flex;
+	flex-wrap: nowrap;
+	padding-bottom: 1rem;
+	margin-top: -1px;
+	overflow-x: auto;
+	text-align: center;
+	white-space: nowrap;
+	-webkit-overflow-scrolling: touch;
+}
+
+.btn-bd-primary {
+	--bd-violet-bg: #712cf9;
+	--bd-violet-rgb: 112.520718, 44.062154, 249.437846;
+	--bs-btn-font-weight: 600;
+	--bs-btn-color: var(--bs-white);
+	--bs-btn-bg: var(--bd-violet-bg);
+	--bs-btn-border-color: var(--bd-violet-bg);
+	--bs-btn-hover-color: var(--bs-white);
+	--bs-btn-hover-bg: #6528e0;
+	--bs-btn-hover-border-color: #6528e0;
+	--bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
+	--bs-btn-active-color: var(--bs-btn-hover-color);
+	--bs-btn-active-bg: #5a23c8;
+	--bs-btn-active-border-color: #5a23c8;
+}
+
+.bd-mode-toggle {
+	z-index: 1500;
+}
+
+.el-carousel__item h3 {
+	color: #475669;
+	font-size: 14px;
+	opacity: 0.75;
+	line-height: 200px;
+	margin: 0;
+}
+
+.el-carousel__item:nth-child(2n) {
+	background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n+1) {
+	background-color: #d3dce6;
+}
+
+.cardleo {
+	margin: 0 10px;
+	height: 100%;
+	border: 3px solid rgb(208, 233, 240);
+	border-radius: 20px;
+}
+
+.leoimg {
+	width: 100px;
+	height: 300px;
+	object-fit: cover;
+	border-radius: 15px;
+}
+
+.carousel-inner:hover .leoimg {
+	transform: scale(1.3);
+	border-radius: 10px;
+	transition: transform 1s ease;
+}
+
+#leoTopBtn {
+	display: none;
+	position: fixed; /* 使用固定位置 */
+	bottom: 20px;
+	right: 30px;
+	z-index: 99; /* 確保不會被其他元素覆蓋 */
+	border: none;
+	outline: none;
+	background-color: lightblue;
+	color: white;
+	cursor: pointer;
+	padding: 18px;
+	border-radius: 100px;
+	font-size: 20px;
+}
+
+#leoTopBtn:hover {
+	background-color: #555;
+}
+</style>
+</head>
+<body>
+	<main>
+		<div class="container marketing">
+			<section class="py-5 text-center container">
+				<p class="brand-text"
+					style="padding-right: 70%; font-weight: bold; color: #ff9090; font-size: 35px;">人氣旅伴</p>
+				<a th:href="@{/playone/more}" class="btn btn-outline-info"
+					style="margin-right: 10px; font-weight: bold;">更多旅伴</a>
+				<div class="responsive">
+					<th:block th:each="playone:${playone}" th:object="${playone}">
+						<div class="cardleo" style="width: 18rem; height: 450px">
+							<!-- 建立輪播圖元素，id 根據 playone 的 id 來動態產生 -->
+							<div th:id="'carouselExampleIndicators'+${playone.PlayoneId}"
+								class="carousel slide photo-div">
+								<!-- 輪播圖內容 -->
+								<div class="carousel-inner" style="border-radius: 15px;">
+									<th:block th:each="img, stat : ${playone.playoneImgs}">
+										<div class="carousel-item"
+											th:class="${stat.first} ? 'carousel-item active' : 'carousel-item'">
+											<a th:href="@{/playone/byId(id=${playone.PlayoneId})}"
+												th:data-playone-id="${playone.PlayoneId}"><img
+												th:src="'data:image/jpeg;base64,' + ${img.base64Photo}"
+												class="d-block w-100 img leoimg" alt="Playone photo"></a>
+										</div>
+									</th:block>
+								</div>
+							</div>
+							<div class="card-body">
+								<div class="nic" id="nic" name="nic"
+									th:text="${playone.playoneNick}"
+									style="width: 100%; display: block; color: #0e548f; font-size: 30px; font-weight: bold;"></div>
+								<div class="age" id="age" name="age"
+									th:text="'🎂 '+${playone.age}+' 歲'"
+									style="width: 100%; font-weight: bold;"></div>
+								<div class="zodiac" id="zodiac" name="zodiac"
+									th:text="${playone.Zodiac}"
+									style="width: 100%; font-weight: bold;"></div>
+								<div class="ins" id="ins" name="ins"
+									th:text="${playone.playoneInterest}"
+									style="width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 100%; color: #dd820c; font-size: 20px; font-weight: bold;"></div>
+							</div>
+						</div>
+					</th:block>
+				</div>
+			</section>
+		</div>
+	</main>
+
+	<script th:src="@{/js/leo/hotPage.js}"></script>
+	<script type="text/javascript">
+	
+	</script>
+</body>
+</html>

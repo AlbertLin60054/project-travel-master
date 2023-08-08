@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>景點瀏覽</title>
+</head>
+
+<style>
+.overlay {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 60px;
+	height: 40px;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	border-radius: 8px;
+	padding: 0 10px;
+}
+
+.overlay i {
+	color: white;
+	margin-right: 5px;
+}
+
+ .card-item {
+    height: 100%;
+  }
+  
+  .card-body-fixed-height {
+    height: 100%;
+  }
+</style>
+
+<body>
+	<div th:replace="~{layout/indexHeader}"></div>
+	<main>
+		<div class="container my-5"
+			style="background-color: rgb(241, 241, 241); padding: 60px">
+
+			<!-- Breadcrumb -->
+			<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+				<div class="d-flex justify-content-between align-items-center">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item active">景點<a href="toSpot"></a></li>
+						<li class="breadcrumb-item active" aria-current="page">全部景點</li>
+						<li class="breadcrumb-item active"><a href="#"></a></li>
+					</ol>
+
+					<!-- BtnForSearchForm -->
+					<button id="showSearchFormBtn" class="btn btn-info">
+						<i id="iconOpen" class="fas fa-search"></i> <span id="textOpen">進階搜尋</span>
+					</button>
+				</div>
+			</nav>
+
+			<!-- SearchForm -->
+			<div class="container" id="searchFormContainer"
+				style="display: none;">
+				<form id="searchForm" th:action="@{/searchSpots}">
+					<div class="row p-3 mb-2 bg-light border border-2 rounded">
+						<div class="col-md-2 mb-3">
+							<label for="cityRegion">地區</label> <select class="form-select"
+								id="cityRegion" name="cityRegion">
+								<option disabled selected>選擇地區</option>
+								<option value="北部">北部</option>
+								<option value="中部">中部</option>
+								<option value="南部">南部</option>
+								<option value="東部">東部</option>
+							</select>
+						</div>
+						<div class="col-md-2 mb-3">
+							<label for="cityName">縣市</label> <select class="form-select"
+								id="cityName" name="cityName">
+								<option disabled selected>選擇縣市</option>
+								<option value="台北市">台北市</option>
+								<option value="新北市">新北市</option>
+								<option value="桃園市">桃園市</option>
+								<option value="台中市">台中市</option>
+								<option value="台南市">台南市</option>
+								<option value="高雄市">高雄市</option>
+								<option value="基隆市">基隆市</option>
+								<option value="新竹市">新竹市</option>
+								<option value="嘉義市">嘉義市</option>
+								<option value="新竹縣">新竹縣</option>
+								<option value="苗栗縣">苗栗縣</option>
+								<option value="彰化縣">彰化縣</option>
+								<option value="南投縣">南投縣</option>
+								<option value="雲林縣">雲林縣</option>
+								<option value="嘉義縣">嘉義縣</option>
+								<option value="屏東縣">屏東縣</option>
+								<option value="宜蘭縣">宜蘭縣</option>
+								<option value="花蓮縣">花蓮縣</option>
+								<option value="台東縣">台東縣</option>
+							</select>
+						</div>
+						<div class="col-md-2 mb-3">
+							<label for="spotType">類型</label> <select class="form-select"
+								id="spotType" name="spotType">
+								<option disabled selected>選擇類型</option>
+								<option th:value="室內">室內</option>
+								<option th:value="室外">室外</option>
+							</select>
+						</div>
+						<div class="col-md-2 mb-3">
+							<label for="txtQuery">關鍵字</label> <input name="txtQuery"
+								type="text" id="txtQuery" class="form-control"
+								placeholder="輸入關鍵字">
+						</div>
+						<div class="col-md-2 mb-3" style="margin-top: 20px;">
+							<button type="submit" name="txtsubmit" class="btn btn-secondary"
+								title="搜尋" aria-label="搜尋">
+								<i class="bi bi-search"></i>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<hr>
+
+			<!-- Cards -->
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4">
+    <div th:each="spot : ${spots}" class="col mb-4 card-item">
+        <div class="col mb-4">
+            <div class="card h-100">
+                <div class="card-wrap position-relative">
+                    <img th:src="@{/images/yu/{filename}(filename=${spot?.spotPic})}"
+                         width="100" height="300" class="card-img-top" alt="spotPic">
+
+                    <!-- HeartIcon -->
+                    <a href="#" class="position-absolute bottom-0 end-0 mb-2 me-2"
+                       th:data-spot-No="${spot.spotNo}" onclick="toggleLike(this)">
+                        <i class="heart-icon fa-regular fa-heart fa-2xl"></i>
+                    </a>
+                    <div class="overlay" style="color: white;">
+                        <i class="fas fa-eye mr-1"></i> <span th:text=${spot.clickCount}></span>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${spot.spotName}"></h5>
+                    <p class="card-text"
+                       th:text="${spot?.spotInfo?.length() > 50 ? spot?.spotInfo?.substring(0, 25) + '...' : spot?.spotInfo}"></p>
+                    <a class="btn btn-primary" th:href="@{/spotDetails/{spotNo}(spotNo=${spot.spotNo})}">More</a>
+                </div>
+
+							<!-- Modal -->
+						<!--  	<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+								aria-labelledby="myModalLabel">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title" id="myModalLabel">收藏景點</h5>
+											<button type="button" class="btn-close"
+												data-bs-dismiss="modal" aria-label="Close"></button>
+										</div>
+										<div class="modal-body">
+											<p>加入收藏</p>
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-secondary"
+												th:onclick="window.location.href='likedSpot'">前往我的收藏</button>
+										</div>
+									</div>
+								</div>
+							</div>-->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+	<div th:replace="~{layout/indexFooter}"></div>
+	<script th:inline="javascript">
+	
+  var showSearchFormBtn = document.getElementById('showSearchFormBtn');
+  var searchFormContainer = document.getElementById('searchFormContainer');
+  var SearchFormVisible = false;
+
+  showSearchFormBtn.addEventListener('click', function() {
+    if (SearchFormVisible) {
+      searchFormContainer.style.display = 'none';
+      document.getElementById('iconOpen').classList.add('fa-search');
+      document.getElementById('iconOpen').classList.remove('fa-times');
+      document.getElementById('textOpen').textContent = '進階搜尋';
+      SearchFormVisible = false;
+    } else {
+      searchFormContainer.style.display = 'block';
+      document.getElementById('iconOpen').classList.add('fa-times');
+      document.getElementById('iconOpen').classList.remove('fa-search');
+      document.getElementById('textOpen').textContent = '關閉';
+      SearchFormVisible = true;
+    }
+  });
+	
+
+	const heartIcons = document.querySelectorAll('.heart-icon');
+
+  heartIcons.forEach(function(icon) {
+    icon.addEventListener('click', function() {
+      if (icon.classList.contains('fa-regular')) {
+        icon.classList.replace('fa-regular', 'fa-solid');
+        alert("收藏");
+      } else {
+        icon.classList.replace('fa-solid', 'fa-regular');
+        alert("取消收藏");
+      }
+    });
+  });
+  
+  
+  const spotPics = document.querySelectorAll('.card-wrap img');
+
+spotPics.forEach(function(spotPic) {
+  spotPic.addEventListener('mouseenter', function() {
+    spotPic.style.filter = 'brightness(120%)';
+  });
+
+  spotPic.addEventListener('mouseleave', function() {
+    spotPic.style.filter = 'brightness(100%)';
+  });
+});
+
+ function toggleLike(icon) {
+        const spotNo = icon.getAttribute('data-spot-No');
+        const heartIcon = icon.querySelector('.heart-icon');
+
+        if (heartIcon.classList.contains('fa-regular')) {
+            // Send AJAX request to like the spot
+            axios.post('/savedSpot', {spotNo: spotNo})
+                .then(response => {
+                    if (response.status === 200) {
+                        heartIcon.classList.replace('fa-regular', 'fa-solid');
+                        alert(response.data);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        } else {
+            // Send AJAX request to unlike the spot
+            axios.post('/savedSpot', {spotNo: spotNo})
+                .then(response => {
+                    if (response.status === 200) {
+                        heartIcon.classList.replace('fa-solid', 'fa-regular');
+                        alert(response.data);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+    }
+	</script>
+	<script th:src="@{/js/yu/axios.min.js}"></script>
+</body>
+</html>

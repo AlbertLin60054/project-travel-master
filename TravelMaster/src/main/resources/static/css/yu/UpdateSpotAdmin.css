@@ -1,0 +1,53 @@
+/*<link rel="stylesheet" th:href="@{/css/yu/UpdateSpotAdmin.css}" />*/
+/*.article {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.aside {
+	width: 600px;
+	border: 2px solid rgb(203,203,203);
+	border-radius: 15px;
+	background-color: rgb(247,247,247);
+	
+}
+
+.section {
+	padding: 50px 50px 5px 50px;
+	line-height: 2em;
+}
+
+label{
+	display: inline-block; 
+	width: 80px; 
+	text-align: left;
+}*/
+
+td {
+	vertical-align: top;
+}
+
+.image-container {
+	width: 30%;
+	height: 30%;
+	overflow: hidden;
+}
+
+.image-container:hover  {
+	width: 80%;
+	height: 80%;
+	overflow: hidden;
+}
+
+.spot-info {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 250px;
+}
+
+.spot-info:hover {
+	white-space: normal;
+	max-width: none;
+}

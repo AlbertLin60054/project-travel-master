@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<!-- CSS FILES -->
+<!-- <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+	href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap"
+	rel="stylesheet">
+<link th:href="@{/css/index/bootstrap.min.css}" rel="stylesheet">
+<link th:href="@{/css/index/bootstrap-icons.css}" rel="stylesheet">
+<link th:href="@{/css/index/templatemo-leadership-event.css}"
+	rel="stylesheet">
+<link th:href="@{/css/index/openModel.css}" rel="stylesheet"> -->
+<link th:href="@{/css/ming/BookingRecordCSS.css}" rel="stylesheet" />
+</head>
+
+<body>
+	<div th:replace="~{layout/memberCenter}"></div>
+	
+
+					<div class="col-lg-10 col-12 text-center mx-auto mb-5">
+						<h2 class="mt-4">
+							[[${session.mbsession.memberName}]] 的 <span>&nbsp;訂票紀錄</span>
+						</h2>
+					</div>
+					<hr>
+					
+					<main>
+						<a href="#">未結帳</a> 
+						<a href="#">已結帳</a> 
+						<a href="#">已退票</a>
+						<div id="indicator"></div>
+					</main>
+
+		<!-- <section class="pricing section-padding">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-4 col-md-6 col-12 mb-5 mb-lg-0">
+						<div class="pricing-thumb bg-white shadow-lg">
+							<div class="pricing-title-wrap d-flex align-items-center">
+								<h4 class="pricing-title text-white mb-0">未結帳</h4>
+								<h5 class="pricing-small-title text-white mb-0 ms-auto">$640</h5>
+							</div>
+
+							<div class="pricing-body"></div>
+						</div>
+					</div>
+
+					<div class="col-lg-4 col-md-6 col-12 mb-5 mb-lg-0">
+						<div class="pricing-thumb bg-white shadow-lg">
+							<div class="pricing-title-wrap d-flex align-items-center">
+								<h4 class="pricing-title text-white mb-0">已結帳</h4>
+								<h5 class="pricing-small-title text-white mb-0 ms-auto">$840</h5>
+							</div>
+
+							<div class="pricing-body"></div>
+						</div>
+					</div>
+
+					<div class="col-lg-4 col-md-6 col-12">
+						<div class="pricing-thumb bg-white shadow-lg">
+							<div class="pricing-title-wrap d-flex align-items-center">
+								<h4 class="pricing-title text-white mb-0">已退票</h4>
+								<h5 class="pricing-small-title text-white mb-0 ms-auto">$1,240</h5>
+							</div>
+
+							<div class="pricing-body"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section> -->
+	
+	<div th:replace="~{layout/dashboardFooter}"></div>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>BackStageAll</title>
+<link th:href="@{/css/chih/backStageAllMember.css}" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+	    #searchInput::placeholder {
+		  text-align: center;
+		}
+</style>
+</head>
+<body>
+	<div th:replace="~{layout/dashboardHeader}"></div>
+	<main>
+	<div class="container-fluid px-4">
+		<h1 class="mt-4">後臺管理系統</h1>
+		<hr>
+		<div class="card mb-4">
+			<div class="card-header" style="display: flex;">
+				<i class="fas fa-table me-1" style="padding-top: 15px; width: 30px; height: 30px;"></i>
+				<p style="padding-left: 10px; padding-top: 15px; font-size: 20px;">使用者資訊</p>
+				<div style="padding-top: 10px; position: absolute; right: 2%; display: flex; align-items: center;">
+			  <form th:action="@{/tosearchallmember.controller}" method="GET">
+			    <input type="text" id="searchInput" name="searchInput" placeholder="搜尋關鍵字詞" maxlength="20" style="width: 180px; height: 40px;">
+			    <input class="btn btn-primary" type="submit" value="查詢">
+			    <input type="hidden" id="memberListJson" th:value="${allMemberJson}">
+   				<input th:if="${findInputMember == 'no'}" class="btn btn-primary" id="exportJson" type="button" value="輸出所有會員">
+   				<input th:if="${findInputMember == 'yes'}" class="btn btn-primary" id="exportJson" type="button" value="輸出查詢結果">
+			  </form>
+			  <input type="hidden" id="myMemberNum" th:value="${mbsession.memberNum}">
+			</div>
+			</div>
+			<div class="card-body">
+				<div style="text-align: right;">
+				    <a th:href="@{/tobackstageallmember.controller}">顯示全部</a>
+				    <p></p>
+				</div>
+				<table id="memberResult" class="display" >
+					<thead>
+						<tr>
+							<th>會員編號</th>
+							<th>姓名</th>
+							<th>性別</th>
+							<th>信箱</th>
+							<th>電話</th>
+							<th>住址</th>
+							<th>身分證</th>
+							<th>帳號</th>
+							<th>密碼</th>
+							<th>權限</th>
+							<th colspan="2" style="text-align: center;">操作</th>
+						</tr>
+					</thead>
+					<tbody id="memberListTableBody">
+						<tr th:each="member, memberStat : ${memberList}">
+							<td style="width: 8%;">
+								<input type="text" class="form-control" th:id="'membernum_' + ${memberStat.index}" name="membernum" th:value="${member.memberNum}" disabled>
+							</td>
+							<td style="width: 9%;">
+								<input type="text" class="form-control" th:id="'membername_' + ${memberStat.index}" name="membername" th:value="${member.memberName}" required maxlength="20" autocomplete="off" disabled>
+							</td>
+							<td style="width: 5.5%;">
+								<input type="text" class="form-control" th:id="'membersex_' + ${memberStat.index}" th:value="${member.memberSex}" disabled>
+							</td>
+							<td>
+								<input type="email" class="form-control" th:id="'membermail_' + ${memberStat.index}" name="membermail" th:value="${member.memberMail}" disabled>
+							</td>
+							<td style="width: 8.5%;">
+								<input type="tel" class="form-control" th:id="'memberphone_' + ${memberStat.index}" name="memberphone" th:value="${member.memberPhone}" disabled>
+							</td>
+							<td>
+								<input type="text" class="form-control" th:id="'memberadd_' + ${memberStat.index}" name="memberadd" th:value="${member.memberAdd}" disabled>
+							</td>
+							<td style="width: 8.5%;">
+								<input type="text" class="form-control" th:id="'memberid_' + ${memberStat.index}" th:value="${member.memberId}" disabled>
+							</td>
+							<td style="width: 9%;">
+								<input type="text" class="form-control" th:id="'memberacc_' + ${memberStat.index}" th:value="${member.memberAcc}" disabled>
+							</td>
+							<td>
+								<input type="password" class="form-control" th:id="'memberpwd_' + ${memberStat.index}" name="memberpwd" th:value="${member.memberPwd}" disabled>
+							</td>
+							<td>
+								<select class="form-select" th:id="'memberlevel_' + ${memberStat.index}" name="memberlevel" disabled>
+									<option value="super_user" th:selected="${member.memberLevel == 'super_user'}">super_user</option>
+									<option value="normal_user" th:selected="${member.memberLevel == 'normal_user'}">normal_user</option>
+									<option value="black_user" th:selected="${member.memberLevel == 'black_user'}">black_user</option>
+								</select>
+							</td>
+							<td>
+								<form th:action="updateallmember.controller" th:method="put">
+									<button type="button" class="updateAllBtn" th:id="'updateBtn_' + ${memberStat.index}" style="border: none;background-color: transparent;"><i class="fa-solid fa-pen-to-square fa-lg" style="color: #8ca8d9;"></i></i></button>									
+									<input type="hidden" th:id="'updatecheck_' + ${memberStat.index}" name="check" th:value="${''}">
+									<input type="hidden" th:id="'num_' + ${memberStat.index}" name="membernum" th:value="${''}">
+									<input type="hidden" th:id="'name_' + ${memberStat.index}" name="membername" th:value="${''}">
+									<input type="hidden" th:id="'email_' + ${memberStat.index}" name="membermail" th:value="${''}">
+									<input type="hidden" th:id="'phone_' + ${memberStat.index}" name="memberphone" th:value="${''}">
+									<input type="hidden" th:id="'address_' + ${memberStat.index}" name="memberadd" th:value="${''}">
+									<input type="hidden" th:id="'password_' + ${memberStat.index}" name="memberpwd" th:value="${''}">
+									<input type="hidden" th:id="'level_' + ${memberStat.index}" name="memberlevel" th:value="${''}">
+									<button type="submit" class="saveAllBtn" th:id="'saveBtn_' + ${memberStat.index}" style="display: none;border: none;background-color: transparent;"><i class="fa-regular fa-floppy-disk fa-beat fa-lg" style="color: #e17070;"></i></button>
+								</form>
+							</td>
+							<td>
+								<form th:action="deletemember.controller" th:method="delete">
+									<input type="hidden" th:id="'deletecheck_' + ${memberStat.index}" name="check" value="">
+									<input type="hidden" th:id="'numdelete_' + ${memberStat.index}" name="numdelete" th:value="${member.memberNum}">
+									<button type="submit" class="deleteAllBtn" th:id="'deleteBtn_' + ${memberStat.index}" style="border: none;background-color: transparent;"><i class="fa-solid fa-trash fa-lg" style="color: #8ca8d9;"></i></button>
+									
+								</form>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="center-container" style=" display: flex; justify-content: center;">
+			<ul class="pagination" th:if="${memberList.totalElements > 0}">
+			    <li th:class="${memberList.number == 0} ? 'page-item disabled' : 'page-item'">
+			        <a th:if="${findInputMember == 'no'}" class="page-link" th:href="@{/tobackstageallmember.controller?(p=${memberList.number})}">上一頁</a>
+			        <a th:if="${findInputMember == 'yes'}" class="page-link" th:href="@{/tosearchallmember.controller?(p=${memberList.number},searchInput=${findsearchInput})}">上一頁</a>
+			    </li>
+			    <th:block th:each="pageNumber:${#numbers.sequence(1, memberList.totalPages)}">
+			        <li th:class="${memberList.number + 1 == pageNumber} ? 'page-item active' : 'page-item'">
+			            <a th:if="${findInputMember == 'no'}" class="page-link" th:href="@{/tobackstageallmember.controller?(p=${pageNumber})}" th:text="${pageNumber}"></a>
+			            <a th:if="${findInputMember == 'yes'}" class="page-link" th:href="@{/tosearchallmember.controller?(p=${pageNumber},searchInput=${findsearchInput})}" th:text="${pageNumber}"></a>
+			        </li>
+			    </th:block>
+			    <li th:class="${memberList.number == memberList.totalPages - 1} ? 'page-item disabled' : 'page-item'">
+			        <a th:if="${findInputMember == 'no'}" class="page-link" th:href="@{/tobackstageallmember.controller?(p=${memberList.number + 2})}">下一頁</a>
+			       <a th:if="${findInputMember == 'yes'}" class="page-link" th:href="@{/tosearchallmember.controller?(p=${memberList.number + 2},searchInput=${findsearchInput})}">下一頁</a>
+
+			    </li>
+			</ul>
+				<p th:unless="${memberList.totalElements > 0}" style="font-size: 50px; color: red;">查無資料</p>
+		</div>
+			<div style="display: flex; justify-content: center; align-items: center;">
+				    <div style="margin-right: 10px;">
+				        <input type="hidden" id="maleCount" th:value="${maleCount}">
+				        <input type="hidden" id="femaleCount" th:value="${femaleCount}">                
+				        <canvas id="genderChart"></canvas>            
+				    </div>
+				    <div>
+				        <input type="hidden" id="superCount" th:value="${superCount}">
+				        <input type="hidden" id="normalCount" th:value="${normalCount}">
+				        <canvas id="userChart"></canvas>
+				    </div>
+			</div>
+	</div>
+</main>
+
+
+	<div th:replace="~{layout/dashboardFooter}"></div>
+	<script th:inline="javascript">
+	$(function () {
+	    $(".updateAllBtn").click(function () {
+	        $(this).closest("tr").find("[id^='membername_'],[id^='membermail_'],[id^='memberphone_'],[id^='memberadd_'],[id^='memberpwd_'],[id^='memberlevel_']").prop("disabled", false);
+	        $(this).css("display", "none");
+	        $(this).siblings(".saveAllBtn").css("display", "block");	
+	    })
+
+	    $(".saveAllBtn").click(function () {
+	    	
+	    	$(this).parent().parent().siblings().children("[id^='membernum_']").prop("disabled", false);
+            $(this).parent().parent().siblings().children("[id^='membernum_']").prop("readonly", true);
+            
+	        var confirmation = confirm("確認更改？");
+	        
+	        var numValue = $(this).closest('tr').find("[id^='membernum_']").val();
+	        var nameValue = $(this).closest('tr').find("[id^='membername_']").val();
+	        var emailValue = $(this).closest('tr').find("[id^='membermail_']").val();
+	        var phoneValue = $(this).closest('tr').find("[id^='memberphone_']").val();
+	        var addressValue = $(this).closest('tr').find("[id^='memberadd_']").val();
+	        var passwordValue = $(this).closest('tr').find("[id^='memberpwd_']").val();
+	        var levelValue = $(this).closest('tr').find("[id^='memberlevel_']").val();
+	
+	        if (confirmation) {
+	            $(this).closest('tr').find("[id^='updatecheck_']").val("Y");
+	            $(this).closest('tr').find("[id^='num_']").val(numValue);
+	            $(this).closest('tr').find("[id^='name_']").val(nameValue);
+	            $(this).closest('tr').find("[id^='email_']").val(emailValue);
+	            $(this).closest('tr').find("[id^='phone_']").val(phoneValue);
+	            $(this).closest('tr').find("[id^='address_']").val(addressValue);
+	            $(this).closest('tr').find("[id^='password_']").val(passwordValue);
+	            $(this).closest('tr').find("[id^='level_']").val(levelValue);
+	            alert("更新成功!!!");
+	        } else {
+	            $(this).closest('tr').find("[id^='updatecheck_']").val("N");
+	            alert("更新失敗!!!");
+	        }
+	    })
+
+	    $(".deleteAllBtn").click(function () {
+	        var confirmation = confirm("確認刪除？");
+	        if (confirmation) {
+	        	$(this).parent().parent().siblings().children("[id^='membernum_']").prop("disabled", false);
+	            $(this).parent().parent().siblings().children("[id^='membernum_']").prop("readonly", true);
+	            $(this).closest('td').find("[id^='deletecheck_']").val("Y");
+	            var numValue = $(this).closest('tr').find("[id^='membernum_']").val();
+	            $(this).closest('tr').find("[id^='numdelete_']").val(numValue);
+	            alert("刪除成功!!!");
+	        } else {
+	            $(this).closest('td').find("[id^='deletecheck_']").val("N");
+	            alert("刪除失敗!!!");
+	        }
+	    })
+	})
+	
+    var maleCount = $("#maleCount").val();;
+    var femaleCount =$("#femaleCount").val();
+    var ctx = document.getElementById('genderChart').getContext('2d');
+    var genderChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['男', '女'],
+            datasets: [{
+                data: [maleCount, femaleCount],
+                backgroundColor: ['#46A3FF', '#FFC1E0']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+    
+    var superCount = $("#superCount").val();;
+    var normalCount =$("#normalCount").val();
+    var ctx = document.getElementById('userChart').getContext('2d');
+    var genderChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['管理員', '一般用戶'],
+            datasets: [{
+                data: [superCount, normalCount],
+                backgroundColor: ['#FF7575', '#00DB00']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+    
+    $(document).ready(function() {
+        $('#exportJson').click(function() {
+            var memberListJson = $('#memberListJson').val();
+            var data = 'data:text/json;charset=utf-8,' + encodeURIComponent(memberListJson);
+            var a = $('<a>')
+                .attr('href', data)
+                .attr('download', 'memberList.json')
+                .text('下載 memberList.json');
+
+            var container = $('<div>').append(a);
+            $('body').append(container);
+            a[0].click();
+            container.remove();
+        });
+    });
+	</script>
+
+</body>
+</html> 

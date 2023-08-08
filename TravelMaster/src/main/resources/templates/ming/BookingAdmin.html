@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8" />
+	<title>台灣高鐵訂票統計</title>
+	<!-- Load c3.css -->
+	<link th:href="@{/css/ming/c3.css}" rel="stylesheet">
+	<style>
+		.c3-axis-y text {
+			font-size: 15px;
+		}
+
+		.c3-axis-x text {
+			font-size: 15px;
+		}
+	</style>
+</head>
+
+<body>
+	<div th:replace="~{layout/dashboardHeader}"></div>
+	<main>
+		<div class="container-fluid px-4">
+			<h1 class="mt-4">台灣高鐵訂票統計</h1>
+			<hr>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="card mb-4">
+						<div class="card-body">
+							<div id="HotSpotChart"></div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="card mb-4">
+						<div class="card-body">
+							<div id="YearMonthlyIncome"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<h1 class="mt-4">台灣高鐵訂票管理</h1>
+			<hr>
+			<div class="card mb-4">
+				<div class="card-body">
+					<article class="text-center container">
+						<section class="timetable-search-frame bg-grey">
+							<div class="container">
+								<div class="download-ttable"></div>
+								<div>
+									<table id="queryResult" class="table table-bordered table-striped table-sm"
+										style="width: 100%;">
+										<thead class="table-light">
+											<tr>
+												<th scope="col" class="align-middle">#</th>
+												<th scope="col" class="align-middle">班次</th>
+												<th scope="col" class="align-middle">座位</th>
+												<th scope="col" class="align-middle">出發站</th>
+												<th scope="col" class="align-middle">抵達站</th>
+												<th scope="col" class="align-middle">出發日期</th>
+												<th scope="col" class="align-middle">出發時間</th>
+												<th scope="col" class="align-middle">抵達時間</th>
+												<th scope="col" class="align-middle">票價</th>
+												<th scope="col" class="align-middle">訂票日期</th>
+											</tr>
+										</thead>
+										<tbody id="queryContent">
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</section>
+					</article>
+				</div>
+			</div>
+		</div>
+	</main>
+	<div th:replace="~{layout/dashboardFooter}"></div>
+	<script th:src="@{/js/ming/sweetalert2.js}"></script>
+	<!-- Load d3.js and c3.js -->
+	<script th:src="@{/js/ming/d3-5.8.2.min.js}" charset="utf-8"></script>
+	<script th:src="@{/js/ming/c3.min.js}"></script>
+	<script th:inline="javascript">
+		$(document).ready(function () {
+			let table;
+			let allTicketInfoDataSource = "services/GetAllTicketInfo";
+
+			if ($.fn.dataTable.isDataTable('#queryResult')) {
+				table = $('#queryResult').DataTable();
+			} else {
+				table = $('#queryResult').DataTable({
+					ajax: allTicketInfoDataSource
+				});
+			}
+			table.ajax.reload();
+		});
+
+		function insertRecord() {
+			location.href = `highSpeedRail/insert`;
+
+		}
+
+		function updateTarget(id) {
+			location.href = `highSpeedRail/update?id=${id}`;
+		}
+
+		function deleteTarget(deleteTarget) {
+			Swal.fire({
+				title: '是否刪除?',
+				icon: 'warning',
+				showCancelButton: true,
+				cancelButtonText: '取消',
+				confirmButtonText: '確定',
+				preConfirm: async () => {
+					console.log("id=" + deleteTarget);
+					try {
+						const response = await fetch(`services/DeleteTicketInfo?id=${deleteTarget}`);
+						if (!response.ok) {
+							throw new Error(response.statusText);
+						}
+						return await response.json();
+					} catch (error) {
+						Swal.showValidationMessage(
+							`Request failed: ${error}`
+						);
+					}
+				},
+				allowOutsideClick: () => !Swal.isLoading()
+			}).then((result) => {
+				if (result.isConfirmed) {
+					let resultObj = result.value;
+					if (resultObj.result) {
+						Swal.fire(
+							'刪除成功',
+							`紀錄刪除成功(id="${resultObj.id}")`,
+							'success'
+						);
+						document.querySelector("#search").click();
+					} else {
+						Swal.fire(
+							'刪除失敗',
+							`紀錄刪除失敗(id="${resultObj.id}")`,
+							'error'
+						);
+					}
+				}
+			});
+		}
+
+
+		//統計熱門目的
+		$.ajax({
+			url: `services/GetHotSpotChartData`,
+			method: 'GET',
+			async: false,
+			success: function (data) {
+				drawChart(data);
+			}
+		});
+
+		function drawChart(data) {
+			let json = JSON.parse(data);
+			let stationNames = json.x; // 取得 x 軸數據  
+			let jsonData = json.TopStation; // 取得 count 軸數據 
+
+			console.log(json);
+			console.log(stationNames);
+			console.log(jsonData);
+
+			var HotSpotChart = c3.generate({
+				bindto: '#HotSpotChart',
+				data: {
+					x: 'x',
+					columns: [
+						jsonData, stationNames
+					],
+					type: 'bar'
+				},
+				axis: {
+					x: {
+						type: 'category',
+						categories: stationNames
+					}
+				}
+			});
+		}
+
+		//統計各月份收益
+		$.ajax({
+			url: `services/AnalysisTicketSales`,
+			method: 'GET',
+			async: false,
+			success: function (data) {
+				AnalysisChart(data);
+			}
+		});
+
+		var IncomeZoomable = true;
+		setInterval(() => {
+			IncomeZoomable = true;
+		}, 2000);
+		function AnalysisChart(data) {
+			var data = JSON.parse(data);
+			console.log(data);
+			// 0: 全年度收益; 1: 近三年收益 ; 2:本年度收益
+			var IncomeState = 2;
+			var YearMonthlyIncome = c3.generate({
+				bindto: '#YearMonthlyIncome',
+				data: {
+					x: 'x',
+					columns: [
+						data.Income_1y, data.x_1y,
+					]
+				},
+				axis: {
+					x: {
+						type: 'timeseries',
+						tick: {
+							format: '%Y-%m'
+						}
+					}
+				}
+			});
+
+
+			document.querySelector("#YearMonthlyIncome").addEventListener("wheel", (event) => {
+				event.preventDefault();
+				event.stopPropagation();
+				if (!IncomeZoomable) {
+					return;
+				}
+				IncomeZoomable = false;
+				if (event.wheelDelta > 0) {
+					if (IncomeState == 2) {
+						return;
+					}
+					IncomeState++;
+				} else if (event.wheelDelta < 0) {
+					if (IncomeState == 0) {
+						return;
+					}
+					IncomeState--; 
+				}
+				switch (IncomeState) {
+					case 0: // 全年度收益
+						YearMonthlyIncome.load({
+							columns: [
+								data.Income_all, data.x_all,
+							],
+							unload: [data.Income_1y[0], data.Income_3y[0], data.x_1y[0], data.x_3y[0]],
+							axis: {
+								x: {
+									type: 'timeseries',
+									tick: {
+										format: '%Y'
+									}
+								}
+							},
+
+						});
+						break;
+					case 1: // 近三年收益
+						YearMonthlyIncome.load({
+							columns: [
+								data.Income_3y, data.x_3y,
+							],
+							unload: [data.Income_1y[0], data.Income_all[0]],
+							axis: {
+								x: {
+									type: 'timeseries',
+									tick: {
+										format: '%Y-%m'
+									}
+								}
+							},
+
+						});
+						break;
+					case 2: // 本年度收益
+						YearMonthlyIncome.load({
+							columns: [
+								data.Income_1y, data.x_1y,
+							],
+							unload: [data.Income_3y[0], data.Income_all[0]],
+							axis: {
+								x: {
+									type: 'timeseries',
+									tick: {
+										format: '%Y-%m'
+									}
+								}
+							},
+
+						});
+						break;
+				}
+			});
+		}
+
+
+	</script>
+</body>
+
+</html>

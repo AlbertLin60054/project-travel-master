@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>和 你 一 起 旅 行</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link
+	href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css"
+	rel="stylesheet" />
+<link
+	href="https://cdn.datatables.net/v/dt/dt-1.13.4/datatables.min.css"
+	rel="stylesheet" />
+<!-- SweetAlert CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
+<style>
+.delete, .update, .savedataleo {
+	display: block;
+	margin: 0 auto;
+	font-size: 1.2em;
+	/* 調整字型大小 */
+	cursor: pointer;
+	/* 變更游標樣式為手指 */
+	border: none;
+	/* 移除按鈕邊框 */
+	background-color: transparent;
+	/* 移除按鈕背景色 */
+}
+
+.photo-div {
+	margin: 0;
+	height: 150px;
+}
+
+.photo {
+	margin: 0 auto;
+	max-width: 100%;
+	max-height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.button-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 30px;
+}
+
+.button-container button {
+	margin: 0 10px;
+	padding: 10px 20px;
+}
+
+.menu {
+	cursor: pointer;
+	font-size: 20px;
+}
+</style>
+</head>
+
+<body>
+<div th:replace="~{leo/client/indexNavbar2}"></div>
+	<main style="display: flex; justify-content: center; align-items: center; margin-top:5%;">
+	<div class="clientImgFragment"></div>
+	<hr class="featurette-divider" />
+			<th:block th:each="playone:${playone}" th:object="${playone}">
+                <div class="card mb-4" style="width: 60%;">
+				<div class="card-header"
+					style="display: flex; align-items: center; justify-content: space-between;">
+					<div>
+						<i class="fas fa-table me-1"></i> 旅伴資料修改
+					</div>
+					<div>
+						<button class="btn btn-outline-info editImg" id="editImg">修改照片</button>
+					</div>
+				</div>
+				<div class="card-body">
+				<div class="input-group mb-3">
+				  <span class="input-group-text" id="inputGroup-sizing-default">旅伴編號</span>
+				  <input type="text" class="form-control id" name="id" th:value="${playone.playoneId}" disabled aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+				</div>
+				<div class="input-group mb-3">
+				  <span class="input-group-text" id="inputGroup-sizing-default">旅伴暱稱</span>
+				  <input type="text" class="form-control nic" name="nic" th:value="${playone.playoneNick}" autocomplete="off" autofocus required maxlength="15" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+				  <div th:id="'nickNameCheck_'+${playone.playoneId}" style="display: flex; justify-content: center; align-items: center; margin: 0;"></div>
+				</div>
+				<div class="input-group mb-3">
+				  <span class="input-group-text" id="inputGroup-sizing-default">旅伴姓名</span>
+				  <input type="text" class="form-control name" name="name" th:value="${playone.playoneName}" required maxlength="15" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+				</div>
+				<div class="input-group mb-3">
+				  <span class="input-group-text" id="inputGroup-sizing-default">旅伴性別</span>
+				  <input type="text" class="form-control sex" name="sex" th:value="${playone.playoneSex}" disabled required maxlength="3" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+				</div>
+				<div class="input-group mb-3">
+				  <span class="input-group-text" id="inputGroup-sizing-default">旅伴生日</span>
+				  <input type="text" class="form-control age" name="age" th:value="${playone.playoneBirth}" required maxlength="8" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+				</div>
+				<div class="input-group mb-3">
+				  <span class="input-group-text" id="inputGroup-sizing-default">個性簽名</span>
+				  <input type="text" class="form-control ins" name="ins" th:value="${playone.playoneInterest}" required maxlength="200" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+				</div>
+				<div class="input-group mb-3">
+				  <span class="input-group-text" id="inputGroup-sizing-default">旅伴介紹</span>
+				  <input type="text" class="form-control int" name="int" th:value="${playone.playoneIntroduce}" style="resize: vertical;" required maxlength="200" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+				</div>
+				<form th:method="put" th:action="@{/playone/clienteditAjax}">
+				<div class="editok" style="display: flex; justify-content: center; align-items: center; margin: 0;"></div>
+					<button type="submit" class="savedataleo" id="saveBtnleo"
+						value="">
+						<i class="fa-solid fa-check fa-beat"></i>
+					</button>
+				</form>
+				</div>
+			</div>
+		</th:block>
+	</main>
+	<div th:replace="~{leo/client/indexFooter}"></div>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+	<script th:inline="javascript" type="text/javascript">
+
+$('form').on('submit', function(e) {
+    e.preventDefault();
+
+    var id = $('.id').val();
+    var nic = $('.nic').val();
+    var name = $('.name').val();
+    var sex = $('.sex').val();
+    var age = $('.age').val();
+    var ins = $('.ins').val();
+    var int = $('.int').val();
+
+    $.ajax({
+        url: '/TM/playone/clienteditAjax',
+        type: 'PUT',
+        data: {
+            'id': id,
+            'nic': nic,
+            'name': name,
+            'sex': sex,
+            'age': age,
+            'ins': ins,
+            'int': int
+        },
+        success: function(response) {
+            if(response == "success") {
+                Swal.fire({
+							title: '修改成功',
+							icon: 'success',
+							confirmButtonText: 'OK'
+						});
+            } else {
+               Swal.fire({
+							title: '修改失敗',
+							icon: 'error',
+							confirmButtonText: '重新操作'
+						});
+            }
+        }
+    });
+});
+	
+
+
+         // 監聽 .nic 輸入框的失焦事件
+         $(document).ready(function() {
+         	 $('.editImg').click(function() { 
+            var playoneId = $('.id').val();
+            $('.card').remove();
+            $.ajax({
+                url: '/TM/playone/clientimgedit', 
+                type: 'POST',
+                data: {
+                    'id': playoneId
+                },
+                success: function(response) {
+                    $('.clientImgFragment').html(response);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(textStatus, errorThrown);
+                }
+            });
+        });
+         
+         
+			$('.nic').on('blur', function () {
+        	var originalNicValue = $(this).val();
+             var nicValue = $(this).val();
+             var idValue = $(this).parent().siblings().find('.id').val();
+             if (nicValue.trim() === "") {
+                 // 檢查暱稱是否為空
+                 // 如果暱稱為空，顯示錯誤提示並禁用提交按鈕
+                 $("#nickNameCheck_" + idValue).html('<span class="text-danger" style="color:red;">請輸入暱稱</span>');
+                 $('button[type="submit"]').attr("disabled", true);
+                 return; // 直接返回，不發送AJAX請求
+             }
+             if (nicValue === originalNicValue) {
+                 // 如果輸入的暱稱與原始暱稱相同，顯示成功提示並啟用提交按鈕
+                 $("#nickNameCheck_" + idValue).html('<span class="text-success" style="color:green;">暱稱可用</span>');
+                 $('button[type="submit"]').attr("disabled", false);
+                 return;
+             }
+
+             // 使用AJAX向指定的URL發送POST請求
+             $.ajax({
+                 url: "/TM/CNController",
+                 method: "POST",
+                 data: {
+                     playoneNick: nicValue,
+                 },
+                 success: function (data) {
+                     if (data != "0") {
+                         // 如果暱稱已存在，顯示錯誤提示並禁用提交按鈕
+                         $("#nickNameCheck_" + idValue).html('<span class="text-danger" style="color:red;">暱稱已存在</span>');
+                         $('button[type="submit"]').attr("disabled", true);
+                     } else {
+                         // 如果暱稱可用，顯示成功提示並啟用提交按鈕
+                         $("#nickNameCheck_" + idValue).html('<span class="text-success" style="color:green;">暱稱可用</span>');
+                         $('button[type="submit"]').attr("disabled", false);
+                     }
+                 },
+             });
+         });
+		});
+
+	</script>
+</body>
+</html>

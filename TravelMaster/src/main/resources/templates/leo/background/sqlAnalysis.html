@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>資料庫分析</title>
+<style>
+</style>
+</head>
+<body>
+
+	<div id="maleCount" th:text="${maleCount}" style="display: none;"></div>
+	<div id="femaleCount" th:text="${femaleCount}" style="display: none;"></div>
+
+	<div id="ageGroup1" th:text="${ageGroup1}" style="display: none;"></div>
+	<div id="ageGroup2" th:text="${ageGroup2}" style="display: none;"></div>
+	<div id="ageGroup3" th:text="${ageGroup3}" style="display: none;"></div>
+	<div id="ageGroup4" th:text="${ageGroup4}" style="display: none;"></div>
+	<div id="ageGroup5" th:text="${ageGroup5}" style="display: none;"></div>
+	<div id="ageGroup6" th:text="${ageGroup6}" style="display: none;"></div>
+
+	<fieldset>
+		<div
+			style="display: flex; justify-content: center; align-items: center;">
+			<div>
+				<canvas id="sexChart"></canvas>
+			</div>
+			<div>
+				<canvas id="ageChart"></canvas>
+			</div>
+		</div>
+	</fieldset>
+
+
+
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script th:src="@{/js/leo/analysis.js}"></script>
+	<script type="text/javascript">
+	  
+	</script>
+</body>
+</html>

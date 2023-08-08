@@ -1,0 +1,329 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<title>Travel Master| Forum</title>
+
+<style>
+/* .sidebar-scrollable {
+			overflow-y: auto;
+			height: 200px;
+		} */
+/* sweetalert2選單調成條列式 */
+.swal2-radio {
+	display: grid !important;
+}
+
+a.articleTypeLink {
+	color: rgb(10, 146, 243);
+}
+
+a.articleTypeLink:hover {
+	color: rgb(0, 16, 239);
+}
+
+a.rightSidebarLink {
+	color: rgb(10, 146, 243);
+}
+
+a.rightSidebarLink:hover {
+	color: rgb(0, 16, 239);
+}
+
+/* .loader {
+			width: 660px;
+			height: 190px;
+			margin: auto;
+			display: block;
+			position: relative;
+			background: #FFF;
+			box-sizing: border-box;
+			border-radius: 5px;
+			border: 1px solid #DDD;
+			display: none;
+		}
+
+		.loader::after {
+			content: '';
+			width: 100%;
+			height: 100%;
+			top: 15px;
+			left: 15px;
+			position: absolute;
+			background-image: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.5) 50%, transparent 80%), linear-gradient(#DDD 100px, transparent 0),
+				linear-gradient(#DDD 24px, transparent 0),
+				linear-gradient(#DDD 60px, transparent 0),
+				linear-gradient(#DDD 30px, transparent 0);
+			background-repeat: no-repeat;
+			background-size: 75px 200px, 100px 100px, 450px 30px, 500px 60px, 630px 30px;
+			background-position: 0% 0, 530px 0, 0 0, 0px 38px, 0px 110px;
+			box-sizing: border-box;
+			animation: animloader 1s linear infinite;
+		}
+
+		@ keyframes animloader {
+			0% {
+				background-position: 0% 0, 530px 0, 0px 0px, 0px 38px, 0px 120px;
+			}
+
+			100 % {
+				background-position:
+					150% 0,
+					530px 0,
+					0px 0px,
+					0px 38px,
+					0px 120px;
+			}
+		} */
+</style>
+</head>
+
+<body>
+
+	<!-- 頂部導航欄 -->
+	<div th:replace="~{layout/indexHeader}"></div>
+
+	<main>
+		<div class="container">
+			<div class="row">
+
+				<!-- leftsidebar -->
+				<div class="col-2 mt-3  pe-1">
+					<div class=" flex-column align-items-stretch p-0 m-0"
+						style="position: fixed;">
+						<form method="get" th:action="@{/forum/search}"class="d-flex mb-1">
+							<input name="keyword" class="form-control me-2" type="search"
+								style="width: 125px;" placeholder="Search">
+							<button class="btn btn-sm btn-outline-success" type="submit">Search</button>
+						</form>
+						<div th:if="${member != null}">
+							<li
+								class="list-group-item list-group-item-action mb-1 rounded border-0"><a
+								th:href="@{/forum/insertArticle}" style="color: black"><i
+									class="fa-solid fa-pen-to-square fa-lg"></i> 撰寫文章</a></li>
+						</div>
+
+						<li
+							class="list-group-item list-group-item-action mb-1 rounded border-0"><a
+							th:href="@{/forum/intoForumPage}" style="color: black"> <i
+								class="fa-solid fa-list fa-lg"></i> 論壇
+						</a></li> <input type="hidden" class="memberNum"
+							th:value="${member?.memberNum}">
+
+						<div class="lsidebar-scrollable">
+							<li
+								class="list-group-item list-group-item-action mb-1 rounded border-0"><a
+								th:href="@{/forum/articleType?articleType=國內}"
+								style="color: black"><i class="fa-solid fa-location-dot"></i>&nbsp
+									國內</a></li>
+							<li
+								class="list-group-item list-group-item-action mb-1 rounded border-0"><a
+								th:href="@{/forum/articleType?articleType=國外}"
+								style="color: black"><i class="fa-solid fa-earth-americas"></i>&nbsp
+									國外</a></li>
+							<li
+								class="list-group-item list-group-item-action mb-1 rounded border-0"><a
+								th:href="@{/forum/articleType?articleType=旅伴}"
+								style="color: black"><i class="fa-solid fa-face-smile-wink"></i>&nbsp
+									旅伴</a></li>
+							<li
+								class="list-group-item list-group-item-action mb-1 rounded border-0"><a
+								th:href="@{/forum/articleType?articleType=旅遊攻略}"
+								style="color: black"><i class="fa-regular fa-thumbs-up"></i>&nbsp
+									旅遊攻略</a></li>
+							<li
+								class="list-group-item list-group-item-action mb-1 rounded border-0"><a
+								th:href="@{/forum/articleType?articleType=注意事項}"
+								style="color: black"><i
+									class="fa-sharp fa-solid fa-circle-exclamation"></i>&nbsp 注意事項</a></li>
+
+						</div>
+					</div>
+				</div>
+
+
+				<!-- article area  -->
+				<div
+					class="mainArea col-6 d-grid gap-2 bg-white rounded p-0 mt-3 align-items-stretch ">
+
+					<div class="border-top  border-bottom mb-3 shadow-sm">
+						<h5 class="p-3 m-0"
+							th:text="${articleType == 'all' ? '首頁' : articleType}"></h5>
+					</div>
+
+					<th:block th:each="article : ${page.content}">
+						<div class="list-group shadow" style="cursor: pointer;">
+							<div
+								class="list-group-item list-group-item-action position-relative p-2">
+								<div class="container-fluid d-flex flex-row p-0">
+									<i class="fa-solid fa-user"></i> &nbsp
+									<div class="co1" th:text=${article.member.memberName}></div>
+									&nbsp &nbsp <i class="fa-solid fa-calendar-days"></i>&nbsp
+									<div class="col me-auto" th:text=${''+article.articleDate}></div>
+
+									<div class="btn-group">
+										<button type="button" class="btn btn-light dropdown-toggle"
+											data-bs-toggle="dropdown"></button>
+										<ul class="dropdown-menu">
+											<li>
+												<button class="collect-btn dropdown-item" type="button"
+													th:data-article-id="${article.articleId}">收藏文章</button>
+											</li>
+											<li>
+												<button class="report-btn dropdown-item" type="button"
+													th:data-article-id="${article.articleId}">檢舉文章</button>
+											</li>
+										</ul>
+									</div>
+								</div>
+
+								<div class="postArea d-flex" data-bs-toggle="modal"
+									th:data-bs-target="'#modalId'+${article.articleId}"
+									th:data-post-id="${article.articleId}">
+
+									<div class=" me-auto mb-auto">
+										<h5 th:text=${article.articleName}></h5>
+										<p
+											th:text="${article.articleSubtitle}">
+										</p>
+
+									</div>
+									<img class="rounded m-1 end-0"
+										style="width: 100px; height: 100px;" alt="..."
+										th:src="@{'/forum/getImage/'+${article.articleId}}" />
+								</div>
+								<div th:id="${'infoBar'+article.articleId}"
+									class="d-flex flex-row">
+									<i class="fa-solid fa-heart"></i>&nbsp
+									<div class="post-like" th:text=${article.articleLikeCount}>
+									</div>
+									&nbsp&nbsp&nbsp&nbsp<i class="fa-solid fa-comment"></i>&nbsp
+									<div class="commentNum"
+										th:text=${#lists.size(article.comments)}></div>
+									&nbsp&nbsp&nbsp<i class="fa-solid fa-eye"></i>&nbsp
+									<div class="viewCount" th:text=${article.articleViewCount}></div>
+								</div>
+							</div>
+						</div>
+					</th:block>
+
+
+					<!-- <span class="loader"></span> -->
+
+					<!-- 當前頁數 & 當前的查詢到的文章類別 -->
+					<input type="hidden" class="currentPage" value="1" /> <input
+						type="hidden" class="currentArticleType" th:value="${articleType}" />
+
+					<!-- 滾動查詢文章生成位置 -->
+					<div
+						class="appendArticle col d-grid gap-2 bg-white rounded p-0 align-items-stretch"></div>
+
+
+
+
+
+					<!-- article pop up windows -->
+					<th:block th:each="article : ${page.content}">
+						<div class="modal fade" th:id="'modalId'+${article.articleId}"
+							tabindex="-1">
+							<div
+								class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+								<div class="modal-content">
+									<div class=" modal-header">
+										<i class="fa-solid fa-user"></i>&nbsp<span
+											class="modal-title fs-5" th:text=${article.member.memberName}></span>
+										<button type="button" class="btn-close"
+											data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+										<div>
+											<h3 th:text=${article.articleName}></h3>
+										</div>
+										<span><a class="articleTypeLink"
+											th:href="@{'/forum/articleType?articleType=' + ${article.articleType}}"
+											th:text="${article.articleType}"></a> ・</span><span th:text=${'發布時間:'+article.articleDate}></span>
+										<p th:utext=${article.articleContent}></p>
+										<div class="likeArea">
+											&nbsp <span class="likeCountArea"
+												th:text="${article.articleLikeCount}"></span>
+										</div>
+										<div class="commentArea"></div>
+									</div>
+									<div class="modal-footer p-0">
+										<div class="container">
+											<div class="row g-1">
+												<div class="col">
+													<input type="hidden" name="articleId"
+														th:value="${article.articleId}">
+													<textarea class="form-control" rows="1"
+														placeholder="留言...."></textarea>
+												</div>
+												<div class="col-auto">
+													<button class="insert-comment-btn btn btn-outline-primary">送出</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</th:block>
+
+					<!-- 滾動查詢 modal生成位置 -->
+					<div class="appendModal"></div>
+
+				</div>
+
+
+
+
+				<!-- rightSidebar -->
+				<div class="col-3 mt-3 p-0 ms-2">
+					<div class="container-fluid p-0 border rounded mb-3 shadow">
+						<ul class="list-group text-center">
+							<li class="list-group-item list-group-item-primary">熱門Top5</li>
+							<th:block th:each="article : ${likeFirstPage.content}">
+								<li class="list-group-item list-group-item-action "><a
+									class="rightSidebarLink" href="" th:text=${article.articleName} style="font-size:15px"></a>
+								</li>
+							</th:block>
+						</ul>
+					</div>
+
+
+					<div class="container-fluid p-0 border rounded mb-3 shadow">
+						<ul class="list-group text-center">
+							<li class="list-group-item list-group-item-primary">點閱Top5</li>
+							<th:block th:each="article : ${viewFirstPage.content}">
+								<li class="list-group-item list-group-item-action "><a
+									class="rightSidebarLink" href="" th:text=${article.articleName} style="font-size:15px"></a>
+								</li>
+							</th:block>
+						</ul>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+
+
+	</main>
+	<!-- Footer -->
+	<div th:replace="~{layout/indexFooter}"></div>
+	<!-- JS -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+		integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+		crossorigin="anonymous"></script>
+	<script th:src="@{/js/yeh/axios.min.js}"></script>
+	<!-- <script th:src="@{/js/yeh/forumPage.js}"></script> -->
+	<script th:src="@{/js/yeh/forumPage.js}"></script>
+
+
+</body>
+
+</html>

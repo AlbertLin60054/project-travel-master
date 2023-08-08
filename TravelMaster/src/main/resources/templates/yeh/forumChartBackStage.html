@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Forum backstage</title>
+</head>
+
+<body>
+    <div th:replace="~{layout/dashboardHeader}"></div>
+    <main>
+        <div class="container-fluid">
+            <h1 class="mt-4">論壇數據統計</h1>
+            <hr>
+
+
+
+
+
+            <div class="row ">
+
+                <div class="col-5">
+                    <div class="card shadow">
+                        <div class="card-header text-center fw-bold">
+                            看板發文數統計
+                        </div>
+                        <div class="card-body d-flex justify-content-center ">
+                            <canvas id="pieChart" width="400" height="435"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="mb-3 d-flex flex-row">
+                        <label for="articleTypeOption" class="p-1 fs-6 fw-bold">請選擇看板:</label>
+                        <select class="form-select form-select-sm shadow" id="articleTypeOption"
+                            style="width:150px; height:30px;">
+                            <option value="國內">國內</option>
+                            <option value="國外">國外</option>
+                            <option value="旅伴">旅伴</option>
+                            <option value="旅遊攻略">旅遊攻略</option>
+                            <option value="注意事項">注意事項</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="card shadow ">
+                            <div class="card-header text-center fw-bold">
+                                貼文按讚TOP5
+                            </div>
+                            <div class="card-body d-flex justify-content-center">
+                                <canvas id="likeBarChart" width="400" height="150"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="card shadow ">
+                            <div class="card-header text-center fw-bold">
+                                觀看次數TOP5
+                            </div>
+                            <div class="card-body d-flex justify-content-center">
+                                <canvas id="viewBarChart" width="400" height="150"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+
+        </div>
+    </main>
+    <script th:src="@{/js/yeh/axios.min.js}"></script>
+    <script th:src="@{/js/dashboard/Chart.min.js}"></script>
+
+    <script th:inline="javascript">
+        let articleTypeCount = /*[[${articleTypeCount}]]*/ {};
+
+        // 提取文章类型和数量为两个数组
+        let articleTypes = Object.keys(articleTypeCount);
+        let counts = Object.values(articleTypeCount);
+
+        // 创建圓餅圖
+        let ctx = document.getElementById('pieChart').getContext('2d');
+        let pieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: articleTypes,
+                datasets: [{
+                    data: counts,
+                    backgroundColor: [
+                        '#FF5733',
+                        '#FFC300',
+                        '#33FF57',
+                        '#33A3FF',
+                        '#B533FF',
+                    ],
+                }],
+            },
+            options: {
+                responsive: false,
+            }
+        });
+
+
+
+
+
+
+
+        let articleTypeOption = document.getElementById('articleTypeOption');
+
+        // 添加change事件监听器
+        articleTypeOption.addEventListener('change', e => {
+            let selected = event.target.value;
+            switch (selected) {
+                case '國內':
+                    findTop5LikeByArticleType(selected);
+                    findTop5ViewByArticleType(selected);
+                    break;
+                case '國外':
+                    findTop5LikeByArticleType(selected);
+                    findTop5ViewByArticleType(selected);
+                    break;
+                case '旅伴':
+                    findTop5ViewByArticleType(selected);
+                    findTop5LikeByArticleType(selected);
+                    break;
+                case '旅遊攻略':
+                    findTop5ViewByArticleType(selected);
+                    findTop5LikeByArticleType(selected);
+                    break;
+                case '注意事項':
+                    findTop5ViewByArticleType(selected);
+                    findTop5LikeByArticleType(selected);
+                    break;
+                default:
+                    break;
+            }
+        });
+
+
+        const findTop5LikeByArticleTypeUrl = 'http://localhost:8080/TM/forum/Top5LikeByArticleType'
+        function findTop5LikeByArticleType(targetArticleType) {
+            axios.get(findTop5LikeByArticleTypeUrl, {
+                params: {
+                    articleType: targetArticleType
+                }
+            })
+                .then(response => {
+                    likeBarChart(response.data)
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+
+
+        }
+
+
+
+        let likeBarChartInstance;
+
+        function likeBarChart(data) {
+            const articleNames = data.map(article => article.articleName);
+            const likeCounts = data.map(article => article.articleLikeCount);
+            let canvas = document.getElementById('likeBarChart');
+            let ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 销毁先前的条形图实例
+            if (likeBarChartInstance) {
+                likeBarChartInstance.destroy();
+            }
+
+            // 创建新的水平条形图实例
+            likeBarChartInstance = new Chart(ctx, {
+                type: 'horizontalBar', // Set the chart type to 'horizontalBar'
+                data: {
+                    labels: articleNames,
+                    datasets: [{
+                        label: '讚數統計',
+                        data: likeCounts,
+                        backgroundColor: [
+                            '#FF5733',
+                            '#FFC300',
+                            '#33FF57',
+                            '#33A3FF',
+                            '#B533FF',
+                        ],
+                    }],
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true // Set to 'true' if you want the x-axis to start from 0
+                        }
+                    }
+                }
+            });
+        }
+
+        let articleLikeInternal = /*[[${dtos}]]*/ {};
+        likeBarChart(articleLikeInternal)
+
+
+
+        const findTop5ViewByArticleTypeUrl = 'http://localhost:8080/TM/forum/Top5ViewByArticleType'
+        function findTop5ViewByArticleType(targetArticleType) {
+            axios.get(findTop5ViewByArticleTypeUrl, {
+                params: {
+                    articleType: targetArticleType
+                }
+            })
+                .then(response => {
+                    console.log(response.data);
+                    viewBarChart(response.data)
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+
+
+        }
+
+
+
+
+
+        let viewBarChartInstance;
+
+        function viewBarChart(data) {
+            const articleNames = data.map(article => article.articleName);
+            const viewCounts = data.map(article => article.articleViewCount);
+            let canvas = document.getElementById('viewBarChart');
+            let ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 销毁先前的条形图实例
+            if (viewBarChartInstance) {
+                viewBarChartInstance.destroy();
+            }
+
+            // 创建新的水平条形图实例
+            viewBarChartInstance = new Chart(ctx, {
+                type: 'horizontalBar', // Set the chart type to 'horizontalBar'
+                data: {
+                    labels: articleNames,
+                    datasets: [{
+                        label: '點閱統計',
+                        data: viewCounts,
+                        backgroundColor: [
+                            '#FF5733',
+                            '#FFC300',
+                            '#33FF57',
+                            '#33A3FF',
+                            '#B533FF',
+                        ],
+                    }],
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true // Set to 'true' if you want the x-axis to start from 0
+                        }
+                    }
+                }
+            });
+        }
+
+
+        let articleViewInternal = /*[[${dtos2}]]*/ {};
+        console.log(articleViewInternal);
+        viewBarChart(articleViewInternal)
+
+
+
+
+    </script>
+
+    <div th:replace="~{layout/dashboardFooter}"></div>
+
+</body>
+
+</html>

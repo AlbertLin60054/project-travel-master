@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>後台管理系統</title>
+	<meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link th:href="@{https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css}" rel="stylesheet" />
+    <link th:href="@{/css/dashboard/styles.css}" rel="stylesheet" />
+    <script th:src="@{https://use.fontawesome.com/releases/v6.3.0/js/all.js}" th:crossorigin="anonymous"></script>
+</head>
+<body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <!-- Navbar Brand-->
+        <a class="navbar-brand ps-3" th:href="@{/layout/index}">Travel Master</a>
+        <!-- Sidebar Toggle-->
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
+                class="fas fa-bars"></i></button>
+        <!-- Navbar Search-->
+        <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+
+        </form>
+        <!-- Navbar-->
+        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" th:href="@{tobackstagepersonal.controller}">個人資料</a></li>
+                    <li>
+                        <hr class="dropdown-divider" />
+                    </li>
+                    <li><a class="dropdown-item" th:href="@{logout.controller}">登出</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">後台管理者</div>
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                            data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                            <div class="sb-nav-link-icon"><i class="fa-regular fa-user"></i></div>
+                            使用者
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne"
+                            data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" th:href="@{/tobackstageallmember.controller}">使用者管理</a>
+                                <a class="nav-link" th:href="@{tobackstagepersonal.controller}">個人資料</a>
+                            </nav>
+                        </div>
+                        <a class="nav-link" href="index.jsp">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-location-dot"></i></div>
+                            行程
+                        </a>
+                        <a class="nav-link" href="index.jsp">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-ticket"></i></div>
+                            訂票
+                        </a> <a class="nav-link" href="index.jsp">
+                            <div class="sb-nav-link-icon"><i class="fa-regular fa-comment-dots"></i></div>
+                            論壇
+                        </a>
+                        <a class="nav-link" href="index.jsp">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-users"></i></div>
+                            陪玩
+                        </a>
+                        <a class="nav-link" href="index.jsp">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+                            訂單管理
+                        </a>
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="small">Version : 1.0.0</div>
+                </div>
+            </nav>
+        </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">使用者</h1>
+                    <hr>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-table me-1"></i>
+                            Data
+                        </div>
+                        <div class="card-body">
+                           <h2>個人資料</h2>
+			<table class="chihTable" border="1">
+			    <tr>
+			        <td>會員編號</td>
+			        <td><input type="text" id="membernum" name="membernum" disabled th:value="${member.memberNum}"></td>
+			    </tr>
+			    <tr>
+			        <td>姓名</td>
+			        <td><input type="text" id="membername" name="membername" disabled th:value="${member.memberName}"></td>
+			    </tr>
+			    <tr>
+			        <td>性別</td>
+			        <td><input type="text" disabled th:value="${member.memberSex}"></td>
+			    </tr>
+			    <tr>
+			        <td>信箱</td>
+			        <td><input type="email" id="membermail" name="membermail" disabled th:value="${member.memberMail}"></td>
+			    </tr>
+			    <tr>
+			        <td>電話</td>
+			        <td><input type="tel" id="memberphone" name="memberphone" disabled th:value="${member.memberPhone}"></td>
+			    </tr>
+			    <tr>
+			        <td>住址</td>
+			        <td><input type="text" id="memberadd" name="memberadd" disabled th:value="${member.memberAdd}"></td>
+			    </tr>
+			    <tr>
+			        <td>身分證</td>
+			        <td><input type="text" disabled th:value="${member.memberId}"></td>
+			    </tr>
+			    <tr>
+			        <td>帳號</td>
+			        <td><input type="text" disabled th:value="${member.memberAcc}"></td>
+			    </tr>
+			    <tr>
+			        <td>密碼</td>
+			        <td><input type="password" id="memberpwd" name="memberpwd" disabled th:value="${member.memberPwd}"></td>
+			    </tr>
+			</table>
+			<form action="updatemember.controller" th:method="put">
+			    <input type="button" class="updateBtn" id="updateBtn" value="修改" onclick="enableFields()">
+			    <input type="hidden" id="check" name="check" value="">
+			    <input type="hidden" id="num1" name="membernum" th:value="${''}">
+			    <input type="hidden" id="name1" name="membername" th:value="${''}">
+			    <input type="hidden" id="email1" name="membermail" th:value="${''}">
+			    <input type="hidden" id="phone1" name="memberphone" th:value="${''}">
+			    <input type="hidden" id="address1" name="memberadd" th:value="${''}">
+			    <input type="hidden" id="password1" name="memberpwd" th:value="${''}">
+			    <input type="submit" class="saveBtn" id="saveBtn" value="確認" style="display: none;">
+			</form>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <footer class="py-4 bg-light mt-auto">
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div>
+                            <!--請勿更動-->
+                        </div>
+                        <div class="text-muted">Copyright &copy; Travel Master 2023</div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <script th:src="@{https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js}"
+        th:crossorigin="anonymous"></script>
+    <script th:src="@{/js/dashboard/scripts.js}"></script>
+	<script th:src="@{https://code.jquery.com/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js}"
+        th:crossorigin="anonymous"></script>
+    <script th:src="@{/js/dashboard/datatables-simple-demo.js}"></script>
+    <script th:src="@{https://kit.fontawesome.com/0a9f356c66.js}" th:crossorigin="anonymous"></script>
+
+
+     <script>
+                $(function () {
+                    $(".updateBtn").click(function () {
+                    	$(this).parent().siblings().children().find("#membername, #membermail, #memberphone, #memberadd, #memberpwd").prop("disabled", false);
+                    	$(this).css("display", "none");
+                        $(this).siblings(".saveBtn").css("display", "block")
+                        $(this).siblings(".saveBtn").click(function () {
+                            $(this).parent().parent().siblings().children("#membernum").prop("disabled", false);
+                            $(this).parent().parent().siblings().children("#membernum").prop("readonly", true);
+                        })
+                       
+						 
+                    });
+                    
+                    $(".saveBtn").click(function() {
+                    	  var numValue = $('#membernum').val();
+                    	  var nameValue = $('#membername').val();
+                    	  var emailValue = $('#membermail').val();
+                    	  var phoneValue = $('#memberphone').val();
+                    	  var addressValue = $('#memberadd').val();
+                    	  var passwordValue = $('#memberpwd').val();
+                    	  
+                    	  var confirmation = confirm("確認更改？");
+                    	  
+                    	  if(confirmation){
+	                    	  $('#num1').val(numValue);
+	                    	  $('#name1').val(nameValue);
+	                    	  $('#email1').val(emailValue);
+	                    	  $('#phone1').val(phoneValue);
+	                    	  $('#address1').val(addressValue);
+	                    	  $('#password1').val(passwordValue);
+	                    	  $('#check').val("Y")  
+	                    	  alert("更新成功!!!");
+                    	  }else{
+                    		  $('#num1').val(numValue);
+                    		  $('#check').val("N");
+                    		  alert("更新失敗!!!");
+                    	  }
+                    	});
+
+                   
+
+                })
+                
+             	
+                          
+         </script>
+	</body>
+
+</html>

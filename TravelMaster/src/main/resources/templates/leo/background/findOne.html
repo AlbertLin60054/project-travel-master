@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" th:href="@{/css/leo/SearchPlayone.css}">
+<title>查 詢 旅 伴 資 料</title>
+<script>
+	function validateForm() {
+		const idInput = document.getElementById("id");
+		if (!idInput.value) {
+			idInput.value = "0";
+		}
+		return true;
+	}
+</script>
+</head>
+<body>
+<fieldset class="searchPlayone">
+	<form th:action="@{/playone/findid}"
+		method="GET"
+		onsubmit="return validateForm()">
+		<div class="searchst1">
+			<input type="hidden"
+				name="action"
+				value="byId">
+			<label for="id"
+				class="searcht1">旅伴編號：</label>
+			<input type="text"
+				id="id"
+				name="id"
+				placeholder="請輸入旅伴編號">
+			<button class="submit-btn"
+				type="submit">查詢</button>
+		</div>
+	</form>
+	<form th:action="@{/playone/findname}" 
+		method="GET">
+		<div class="searchst1">
+			<input type="hidden"
+				name="action"
+				value="byName">
+			<label for="name"
+				class="searcht1">旅伴名稱：</label>
+			<input type="text"
+				id="name"
+				name="name"
+				placeholder="請輸入完整名稱">
+			<button class="submit-btn"
+				type="submit">查詢</button>
+		</div>
+	</form>
+</fieldset>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+</html>

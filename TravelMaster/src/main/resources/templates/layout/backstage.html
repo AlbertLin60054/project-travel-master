@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>BackStage</title>
+</head>
+<body>
+	<div th:replace="~{layout/dashboardHeader}"></div>
+	
+		<main>
+				<div class="container-fluid px-4">
+					<h1 class="mt-4">後台管理系統</h1>
+					<hr>
+					<h2 class="mt-4">Hi, [[${session.mbsession.memberName}]] ~</h2>
+				</div>
+		</main>
+	
+	<div th:replace="~{layout/dashboardFooter}"></div>
+
+</body>
+</html>

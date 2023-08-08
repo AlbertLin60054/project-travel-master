@@ -1,0 +1,84 @@
+/* 樣式設定 */
+html, body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+
+.container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+}
+
+.link {
+	color: white;
+	font-size: 100px;
+	text-decoration: none;
+	border: 1px solid white;
+	border-radius: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: transform 0.2s ease-out;
+}
+
+.link:hover {
+	transform: scale(1.1);
+}
+
+p {
+	color: white;
+	font-size: 20px;
+	margin-left: 100px;
+}
+
+/* 影片設定 */
+.video-wrap video {
+	opacity: 0;
+	animation: fadeIn 1s ease-in-out forwards;
+	filter: brightness(0.5);
+}
+
+.video-background {
+	position: fixed;
+	top: -700px;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	overflow: hidden;
+	z-index: -1;
+}
+
+.video-wrap {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: auto;
+	height: auto;
+	min-width: 100%;
+	min-height: 100%;
+	transform: translate(-50%, -50%);
+}
+
+.video-wrap video {
+	min-width: 100%;
+	min-height: 100%;
+	width: auto;
+	height: auto;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+@keyframes fadeIn {from { opacity:0;
+	
+}
+
+to {
+	opacity: 1;
+}
+}

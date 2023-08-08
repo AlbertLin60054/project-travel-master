@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>套裝行程</title>
+
+	<!-- 商品頁套件 -->
+	<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css'>
+
+	<link th:href="@{/css/sean/productPage.css}" rel="stylesheet">
+
+	<!-- 日期選擇器 -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+	<!-- 日期選擇器 -->
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+</head>
+
+<body>
+	<div th:replace="~{layout/indexHeader}"></div>
+	<main>
+		<!-- 搜尋欄位 -->
+		<br>
+		<div class="container" id="searchFormContainer">
+			<form id="searchForm" th:action="@{/sean/productQuery}" method="get">
+				<div class="row" style="margin-left: 290px;">
+					<div class="col-md-2 mb-3">
+						<label for="destination" class="form-label">類型:</label>
+						<select class="form-select" id="destination" name="productType">
+							<option value="">全部</option>
+							<option value="國內">國內</option>
+							<option value="國外">國外</option>
+						</select>
+					</div>
+					<div class="col-md-2 mb-3">
+						<label for="productStartDate" class="form-label"><i class="fa-regular fa-clock"></i>
+							啟程日期:</label>
+						<input type="text" class="form-control datepicker" id="productStartDate" name="productStartDate"
+							placeholder="請點擊選擇日期:">
+					</div>
+					<div class="col-md-2 mb-3">
+						<label for="sort" class="form-label">價格排序:</label> <select
+							class="form-select" id="sort" name="sort">
+							<option value="">不排序</option>
+							<option value="asc">價格低到高</option>
+							<option value="desc">價格高到低</option>
+						</select>
+					</div>
+					<div class="col-md-2 mb-3">
+						<label for="search" class="form-label">搜尋:</label>
+						<input type="text" class="form-control" id="search" name="search" placeholder="輸入關鍵字">
+					</div>
+					<div class="col-md-2 mb-3" style="margin-top: 30px;">
+						<button type="submit" class="btn btn-outline-dark flex-shrink-0 queryBtn">查詢</button>
+					</div>
+				</div>
+			</form>
+		</div>
+		<hr>
+		<!-- 商品欄位 -->
+		<section>
+			<div class="container px-4 px-lg-5 my-5">
+				<div id="productContainer">
+					<th:block th:each="product : ${products}">
+						<div class="row gx-4 gx-lg-5 align-items-center">
+							<div class="col-md-6">
+								<img class="card-img-top mb-5 mb-md-0 product-image"
+									th:src="@{'/sean/getImage/' + ${product.productId}}" alt="未上傳照片.." />
+							</div>
+							<div class="col-md-6">
+								<h1 class="display-5 fw-bolder" th:text="${product.productName}"></h1>
+								<div class="fs-5">
+									行程編號: <span th:text="${product.productId}"></span>
+								</div>
+								<div class="fs-5">
+									<span class="text-decoration"
+										th:text="'行程價格 : ' + '$' + ${product.productPrice}"></span>
+								</div>
+								<div class="fs-5">
+									<span class="text-decoration"
+										th:text="'行程名額 : ' + ${product.productQuantity}"></span>
+								</div>
+								<div class="fs-5">
+									<span class="text-decoration"
+										th:text="'當前報名人數 : ' + ${product.productRegistrations}"></span>
+								</div>
+								<div class="fs-5">
+									<span class="text-decoration" th:text="'行程類別 : ' + ${product.productType}"></span>
+								</div>
+								<div class="fs-5">
+									<span class="text-decoration"
+										th:text="'行程日期 : ' + ${#dates.format(product.productStartDate, 'yyyy-MM-dd')} + ' 至 ' + ${#dates.format(product.productEndDate, 'yyyy-MM-dd')}"></span>
+								</div>
+								<div class="fs-5">
+									<span class="text-decoration"
+										th:text="'行程簡介 : ' + ${product.productDescription}"></span>
+								</div>
+								<br>
+								<div class="d-flex">
+									<!-- 加入購物車 -->
+									<form th:action="@{/sean/addToCart}" method="post" class="addToCartForm">
+										<input type="hidden" name="productId" th:value="${product.productId}" />
+										<input type="hidden" name="productType" th:value="${product.productType}" />
+										<input type="hidden" name="productName" th:value="${product.productName}" />
+										<input type="hidden" name="productPrice" th:value="${product.productPrice}" />
+										<!-- 報名預設人數 -->
+										<input type="hidden" name="productRegistrations" th:value="1" />
+										<input type="hidden" name="productQuantity"
+											th:value="${product.productQuantity}" />
+										<input type="hidden" name="productDescription"
+											th:value="${product.productDescription}" />
+										<input type="hidden" name="productStartDate"
+											th:value="${product.productStartDate}" />
+										<input type="hidden" name="productEndDate"
+											th:value="${product.productEndDate}" />
+										<input type="hidden" name="productStatus" th:value="${product.productStatus}" />
+										<!-- 加入購物車btn -->
+										<button type="submit"
+											class="btn btn-outline-dark flex-shrink-0 add-to-cart-btn">
+											<i class="bi-cart-fill me-1"></i>加入購物車
+										</button>
+									</form>&nbsp;
+								</div>
+								<br>
+							</div>
+							<div style="height: 50px;"></div>
+							<!-- 加入空的 div 元素並設定高度 -->
+							<hr>
+							<div style="height: 20px;"></div>
+							<!-- 加入空的 div 元素並設定高度 -->
+						</div>
+					</th:block>
+				</div>
+				<div id="loadMoreContainer" class="text-center">
+					<a>往下顯示更多 <i class="fa-solid fa-angles-down"></i></a>
+				</div>
+			</div>
+		</section>
+
+	</main>
+	<!-- js -->
+	<div th:replace="~{layout/indexFooter}"></div>
+	<script th:src="@{/js/sean/productPage.js}"></script>
+
+
+
+</body>
+
+</html>

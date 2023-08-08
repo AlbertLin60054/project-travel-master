@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>台灣高鐵時刻表與票價查詢</title>
+</head>
+<body th:onload="showPrice()">
+
+	<div th:replace="~{layout/indexHeader}"></div>
+
+	<main>
+		<form>
+			<article class="py-5 text-center container">
+				<div>
+					<h3>台灣高鐵時刻表與票價查詢</h3>
+				</div>
+				<hr>
+				<section class="timetable-search-frame bg-grey">
+					<div class="container">
+						<div class="p-3 mb-2 bg-light border border-2 rounded">
+							<div class="inline-input-group row">
+								<div class="col">
+									<label for="departureST">出發站：</label> <select id="departureST"
+										name="departureST" class="form-control mt-0 select-type01"
+										title="出發站" th:onchange="showPrice()">
+										<option th:each="station:${stationList}"
+											th:value="${station.stationID}"
+											th:text="${station.stationName}"></option>
+									</select>
+								</div>
+								<div class="col-input col">
+									<label for="destinationST" class="t1">抵達站：</label> <select
+										id="destinationST" name="destinationST"
+										class="form-control mt-0 select-type01" title="到達站"
+										th:onchange="showPrice()">
+										<option th:each="station:${stationList}"
+											th:value="${station.stationID}"
+											th:text="${station.stationName}"></option>
+									</select>
+								</div>
+
+								<div class="col-input col">
+									<label class="input-smalllabel" for="typeOfTicket"> 票種
+									</label> <select class="form-control mt-0 select-type01" title="票種"
+										id="typeOfTicket">
+										<option value="tot-1" selected>單趟</option>
+										<!-- <option value="tot-2" selected>來回</option> -->
+									</select>
+								</div>
+								<div class="col-input col-2">
+									<label class="input-smalllabel" for="departuredate">出發日期</label>
+									<input id="departuredate" type="Date"
+										class="form_date form-control">
+								</div>
+								<div class="col-input col-2">
+									<label class="input-smalllabel" for="departureTime">出發時刻</label>
+									<input id="departureTime" type="Time"
+										class="form_date form-control">
+								</div>
+								<div class="col-input col">
+									<label class="input-smalllabel" for="typesofticket">
+										參考票價 </label> <input type="text" id="price" name="price"
+										class="form-control mt-0 select-type01">
+								</div>
+								<div class="col-input col">
+									<button type="button" title="查詢"
+										class="btn btn-secondary  mt-3" id="start-search"
+										th:onclick="search()">查詢</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div>
+						<hr>
+						<div class="container" id="queryResult" style="display: none">
+							<div class="row ">
+								<div class="col d-flex justify-content-start">
+									<div id="from_st" class="d-inline p-2 fs-5"></div>
+									<!--  出發站 -->
+									<div class="d-inline p-2 fs-5">
+										<i class="fa-solid fa-arrow-right"></i>
+									</div>
+									<!-- 箭頭 -->
+									<div id="to_st" class="d-inline p-2 fs-5"></div>
+									<!-- 抵達站 -->
+									<div id="dep_date" class="d-inline p-2 fs-5"></div>
+									<!-- 出發日期 -->
+								</div>
+							</div>
+							<div class="row">
+
+								<table
+									class="table table-bordered table-striped table-sm table table-striped table-hover">
+									<thead class="table-light">
+										<tr>
+											<th scope="col" class="align-middle">車次</th>
+											<th scope="col" class="align-middle">出發時間</th>
+											<th scope="col" class="align-middle">抵達時間</th>
+											<th scope="col" class="align-middle">搭乘時間</th>
+											<!-- 	<th scope="col" class="align-middle">剩餘位數</th> -->
+											<th scope="col" class="align-middle">訂票</th>
+										</tr>
+									</thead>
+									<tbody id="queryContent" class="justify-content-center">
+									</tbody>
+								</table>
+								<div id="pagination"
+									style="display: flex; justify-content: center; align-items: center;"></div>
+							</div>
+						</div>
+					</div>
+					<input type="hidden" id="priceInfos" name="priceInfos"
+						th:value='${priceInfos}' />
+				</section>
+			</article>
+			<input type="hidden" name="action" value="" />
+		</form>
+	</main>
+
+	<div th:replace="~{layout/indexFooter}"></div>
+	<script th:src="@{/js/ming/sweetalert2.js}"></script>
+
+	<script th:inline="javascript">
+	var priceInfos = new Map();
+	var basePath = window.location.protocol + "//" + window.location.hostname + ":" + location.port + '/TM';
+	let tmpS;
+
+	$(document).ready(function() {
+	var today = new Date();
+	var date = today.getFullYear()+'-'+((today.getMonth()+1 < 10)? '0':'') + (today.getMonth()+1)+'-'+((today.getDate() < 10)? '0':'') + today.getDate();
+	var time = today.getHours() + ":" + today.getMinutes();
+	document.querySelector("#departuredate").value = date;
+	document.querySelector("#departureTime").value = time;
+	
+	if (priceInfos.size == 0) {
+		let priceInfosObj = JSON.parse(document.querySelector("#priceInfos").value);
+		priceInfosObj.forEach((element) => {
+			tmpS = new Set();
+			tmpS.add(element.pk.departureST); // departureST
+			tmpS.add(element.pk.destinationST); // destinationST
+			priceInfos.set(tmpS, element.price);
+		});
+	} 
+
+	});
+
+function showPrice() {
+	let departureST = document.querySelector("#departureST");
+	let destinationST = document.querySelector("#destinationST");
+	let price = document.querySelector("#price");
+
+	if (parseInt(departureST.value) == parseInt(destinationST.value)) {
+		price.value = 0;
+		return;
+	}
+
+	priceInfos.forEach((value, key) => {
+		if (key.has(departureST.value) && key.has(destinationST.value)) {
+			price.value = value;
+			return;
+		}
+	});
+}
+
+var currPageNum = 1;
+function search(pageNum = 1) {
+	currPageNum = pageNum;
+	let departureST = document.querySelector("#departureST");
+	let destinationST = document.querySelector("#destinationST");
+	let departuredate = document.querySelector("#departuredate");
+	let departureTime = document.querySelector("#departureTime");
+	if (parseInt(departureST.value) == parseInt(destinationST.value)) {
+		Swal.fire(
+			'( ｣｡╹o╹｡)｣',
+			'您的 「出發站」 與 「抵達站」 相同 <(ΦωΦ)>',
+			'warning'
+		)
+		return;
+	}
+	if (departuredate.value == "") {
+		Swal.fire(
+			'( ｣｡╹o╹｡)｣',
+			'請記得選擇出發日期 !',
+			'warning'
+		)
+		return;
+	}
+	if (departureTime.value == "") {
+		Swal.fire(
+			'( ｣｡╹o╹｡)｣',
+			'請記得選擇出發時刻 !',
+			'warning'
+		)
+		return;
+	}
+
+	let queryResult = document.querySelector("#queryResult");
+	let from_st = document.querySelector("#from_st");
+	let to_st = document.querySelector("#to_st");
+	let dep_date = document.querySelector("#dep_date");
+	from_st.innerHTML = departureST.options[departureST.selectedIndex].text;
+	to_st.innerHTML = destinationST.options[destinationST.selectedIndex].text;
+	dep_date.innerHTML = departuredate.value;
+
+	fetch(`services/GetTranInfo?
+			departureST=${departureST.value}&
+			destinationST=${destinationST.value}&
+			departureTime=${departureTime.value}&
+			p=${currPageNum}`, {
+		method: "GET",
+		headers: {
+			'Content-Type': 'application/json'
+		}
+	}).then(response => {
+		if (response.ok) {
+			return response.json();
+		} else {
+			throw new Error("Error: " + response.status);
+		}
+	}).then(data => {
+		
+		let totalPageNumber = Math.ceil(data.total / data.pageable.size); 
+		
+		placeQueryContent(data.content);
+		createPageButton(totalPageNumber);
+		queryResult.style.display = "";
+	}).catch(error => {
+		console.error(error);
+	});
+}
+
+function createPageButton(totalPageNumber) {
+	let paginationField = document.querySelector("#pagination");
+	paginationField.innerHTML = "";
+	
+	let pagination_ul = document.createElement("ul");
+	pagination_ul.className = "pagination";
+
+	
+	let pre = document.createElement("li");
+	pre.className = "page-item";
+	let pre_a = document.createElement("a");
+	pre_a.className = "page-link";
+	pre_a.innerHTML = "上一頁";
+	pre_a.href = "#";
+	pre.appendChild(pre_a);
+	if (currPageNum == 1) {
+		pre.classList.add("disabled");
+	}
+	
+	pre.addEventListener("click", () => {
+		if (currPageNum == 1) {
+			return;
+		}
+		search(currPageNum - 1);
+	});
+	pagination_ul.appendChild(pre);
+
+	
+	for (let i = 1; i < (totalPageNumber + 1); i++) {
+		let pagination_li = document.createElement("li");
+		pagination_li.classList.add("page-item");
+		if (i == currPageNum) {  
+			pagination_li.classList.add("active");
+			let pagination_span = document.createElement("span");
+			pagination_span.className = "page-link";
+			pagination_span.innerHTML = i;
+			pagination_li.appendChild(pagination_span);
+		} else {
+			let pagination_a = document.createElement("a");
+			pagination_a.className = "page-link";
+			pagination_a.innerHTML = i;
+			pagination_a.href = "#";
+			pagination_a.addEventListener("click", () => {
+				search(i);
+			});
+			pagination_li.appendChild(pagination_a);
+		}
+		pagination_ul.appendChild(pagination_li);
+	}
+
+	
+	let next = document.createElement("li");
+	next.className = "page-item";
+	let next_a = document.createElement("a");
+	next_a.className = "page-link";
+	next_a.href = "#";
+	next_a.innerHTML = "下一頁";
+	next.appendChild(next_a);
+	
+	if (currPageNum == totalPageNumber) {
+		next.classList.add("disabled");
+	}
+	next.addEventListener("click", () => {
+		if (currPageNum == totalPageNumber) {
+			return;
+		}
+		search(currPageNum + 1);
+	});
+	pagination_ul.appendChild(next);
+
+	paginationField.appendChild(pagination_ul);
+
+
+}
+
+function placeQueryContent(tranInfos) {
+	let queryContent = document.querySelector("#queryContent");
+	let mbLogin = [[${session.mbsession}]];
+	queryContent.innerHTML = '';
+	
+	if (tranInfos.length > 0) {
+		tranInfos.forEach(function(tranInfo) {
+			let infoRow = document.createElement("tr");
+			let tranNo = document.createElement("td");
+			tranNo.innerHTML = tranInfo.tranNo;
+			tranNo.classList.add("fs-5");
+			let dep_time = document.createElement("td");
+			dep_time.innerHTML = tranInfo.departureTime;
+			dep_time.classList.add("fs-5");
+			let arr_time = document.createElement("td");
+			arr_time.innerHTML = tranInfo.arrivalTime;
+			arr_time.classList.add("fs-5");
+			let diff_time = document.createElement("td");
+			let arrTime = arr_time.innerHTML.split(":");
+			arrTime = parseInt(arrTime[0]) * 60 + parseInt(arrTime[1]);
+			//console.log(arrTime);
+			let depTime = dep_time.innerHTML.split(":");
+			depTime = parseInt(depTime[0]) * 60 + parseInt(depTime[1]);
+			let timeDiff = Math.abs(depTime - arrTime);
+			diff_time.innerHTML = parseInt(timeDiff / 60) + "&nbsp;小時&nbsp;" + timeDiff % 60 + "&nbsp;分";
+			diff_time.classList.add("fs-5");
+			//diff_time.innerHTML = arr_time.value - dep_time.value
+			//diff_time.innerHTML = Math.abs(arrTime.toDateString() - depTime.toDateString());
+
+			let booking = document.createElement("td");
+			let booking_btn = document.createElement("button");
+			booking_btn.type = "button";
+			booking_btn.innerHTML = "訂票";
+
+			booking.appendChild(booking_btn);
+			booking_btn.classList.add("btn");
+			booking_btn.classList.add("btn-secondary");
+			
+			if (mbLogin != null) {
+				booking_btn.onclick = function() { choose(tranInfo) };
+			} else {
+				booking_btn.onclick = function() { showSweetAlert() };
+			}
+
+			infoRow.appendChild(tranNo);
+			infoRow.appendChild(dep_time);
+			infoRow.appendChild(arr_time);
+			infoRow.appendChild(diff_time);
+			infoRow.appendChild(booking);
+
+			queryContent.appendChild(infoRow);
+		});
+	} else {
+		queryContent.innerHTML = '<td colspan="5" class="align-center justify-content-center text-center"><i>無結果</i></td>';
+	}
+}
+
+function showSweetAlert() {
+    Swal.fire({
+        title: '( ｣｡╹o╹｡)｣',
+        text: '登入會員後才可以進行訂票唷 !',
+        icon: 'warning',
+        confirmButtonText: '確定'
+    });
+}
+
+function choose(tranInfo) {
+	console.log(tranInfo);
+	let parmLst = "id,tranNo,arrivalTime,departureST,departureTime,destinationST".split(",");
+	let submitForm = document.createElement("form")
+	submitForm.method = "POST";
+	submitForm.action = `choose`;
+	parmLst.forEach((parm) => {
+		var tmpInput = document.createElement("input");
+		tmpInput.setAttribute("name", parm);
+		tmpInput.setAttribute("value", tranInfo[parm]);
+		submitForm.appendChild(tmpInput);
+	});
+	var tmpInput = document.createElement("input");
+	tmpInput.setAttribute("name", "departureDate");
+	tmpInput.setAttribute("value", document.querySelector("#departuredate").value);
+	submitForm.appendChild(tmpInput);
+	
+	
+	document.body.appendChild(submitForm);
+	submitForm.submit();
+}
+
+	</script>
+</body>
+</html>

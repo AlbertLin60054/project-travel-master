@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Forum backstage</title>
+</head>
+
+<body>
+	<div th:replace="~{layout/dashboardHeader}"></div>
+	<main>
+		<div class="container-fluid px-4">
+			<h1 class="mt-4">論壇管理系統</h1>
+			<hr>
+			<div class="card mb-4">
+				<div class="card-header">
+					<i class="fas fa-table me-1"></i>
+				</div>
+				<div class="card-body">
+					<table id="articles" class="display" style="width: 100%">
+
+						<thead>
+							<tr>
+								<th>文章編號</th>
+
+								<th>會員編號</th>
+
+								<th>文章名稱</th>
+
+								<th>發佈日期</th>
+
+								<th>文章內容</th>
+
+								<th>文章類別</th>
+
+								<th>讚數統計</th>
+
+								<th>觀看次數</th>
+
+								<th>封面縮圖</th>
+
+								<th>文章狀態</th>
+								<th>檢舉紀錄</th>
+								<th>操作</th>
+
+							</tr>
+						</thead>
+						<tbody>
+							<th:block th:each="article : ${articles}">
+								<tr>
+									<td th:text=${article.articleId}></td>
+
+									<td th:text=${article.member.memberNum}></td>
+
+									<td th:text=${article.articleName}></td>
+
+									<td th:text=${''+article.articleDate}></td>
+
+									<td><button class="content-btn btn btn-sm btn-outline-primary"
+											data-bs-toggle="modal" data-bs-target="#contentModal">更多</button>
+										<div th:id="${'articleContent'+article.articleId}" style="display: none;"
+											th:text=${article.articleContent}></div>
+									</td>
+									<td th:text=${article.articleType}></td>
+
+									<td th:text=${article.articleLikeCount}></td>
+
+									<td th:text=${article.articleViewCount}></td>
+
+									<td><img class="rounded m-2 end-0" style="width: 50px; height: 50px;" alt="..."
+											th:src="@{'/forum/getImage/'+${article.articleId}}" /></td>
+
+									<td><span th:text=${article.articleStatus}></span>
+									</td>
+
+									<td>
+										<form method="get" th:action="@{/forum/reportBackstage}">
+											<input type="hidden" name="articleId" th:value="${article.articleId}">
+											<button type="submit" class="btn btn-sm btn-outline-danger"
+												th:if="${not #lists.isEmpty(article.report)}">查看</button>
+										</form>
+										<button type="button" class="btn btn-sm btn-outline-success disabled"
+											th:unless="${not #lists.isEmpty(article.report)}">無紀錄</button>
+										</button>
+									</td>
+
+									<td>
+										<button type="button" class="statusEdit-btn btn btn-sm btn-outline-warning"
+											th:data-article-id="${article.articleId}">修改</button>
+										</button>
+
+									</td>
+								</tr>
+							</th:block>
+
+						</tbody>
+
+					</table>
+
+				</div>
+
+			</div>
+		</div>
+
+
+
+
+		<div class="modal fade" id="contentModal" tabindex="-1" style="z-index: 1500;">
+			<div class="modal-dialog modal-xl  modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5">文章內容</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<div class="modal-body"></div>
+				</div>
+			</div>
+		</div>
+
+
+
+
+	</main>
+	<script th:src="@{/js/yeh/axios.min.js}"></script>
+	<script>
+
+		$(document).ready(function () {
+			$('#articles').DataTable();
+		});
+		//抓取文章內容
+		let contentBtn = document.querySelectorAll('.content-btn');
+
+		for (let i = 0; i < contentBtn.length; i++) {
+			contentBtn[i].addEventListener('click', e => {
+				let text = e.target.nextElementSibling.textContent;
+				let modal = document.querySelector('.modal-body')
+				modal.innerHTML = text
+
+			})
+
+		}
+
+
+		//文章狀態修改
+
+		let editBtn = document.querySelectorAll('.statusEdit-btn');
+
+		for (let i = 0; i < editBtn.length; i++) {
+			editBtn[i].addEventListener('click', e => {
+				e.preventDefault();
+				let articleId = e.target.getAttribute('data-article-id');
+
+				Swal.fire({
+					title: '文章狀態修改',
+					input: 'radio',
+					inputOptions: {
+						'公開': '公開',
+						'刪除': '刪除',
+						'封鎖': '封鎖',
+					},
+					inputValidator: (value) => {
+						if (!value) {
+							return '請選擇一個選項';
+						}
+					}
+				}).then((result) => {
+					if (result.isConfirmed) {
+
+						console.log(result.value);
+						statusEditRequest(result.value, articleId)
+					}
+				});
+			})
+
+		}
+		const articleStatusUrl = 'http://localhost:8080/TM/forum/editStatus';
+		function statusEditRequest(newArticleStatus, targetArticleId) {
+			axios.put(articleStatusUrl, { articleStatus: newArticleStatus, articleId: targetArticleId })
+				.then(response => {
+					console.log(response);
+					window.location.href = "http://localhost:8080/TM/forum/backstage";
+				})
+				.catch(err => {
+
+				})
+		}
+
+
+
+
+
+
+	</script>
+	<div th:replace="~{layout/dashboardFooter}"></div>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,107 @@
+@charset "UTF-8";
+            .leo {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            fieldset {
+                width: 500px;
+                border: 1px solid lightblue;
+                border-radius: 2px;
+                margin: 10px;
+            }
+
+            legend {
+                color: rgb(11, 53, 240);
+                margin-left: 65px;
+            }
+
+            strong {
+                color: red;
+            }
+
+            .st1 {
+                width: 450px;
+                margin: 10px;
+                padding: 5px;
+                padding-left: 125px;
+            }
+
+            .sub {
+                width: 450px;
+                margin: 20px;
+                text-align: center;
+            }
+
+            .t1 {
+                width: 100px;
+                float: left;
+                text-align: right;
+            }
+
+            textarea {
+                resize: none;
+            }
+
+            .sub input[type="submit"] {
+                border: 0;
+                background-color: #003C9D;
+                color: #fff;
+                border-radius: 10px;
+                cursor: pointer;
+                padding: 5px 10px;
+                font-size: 20px;
+            }
+
+            .sub input {
+                border: none;
+                background-color: #9E9E9E;
+                color: #fff;
+                border-radius: 10px;
+                cursor: pointer;
+                padding: 5px 10px;
+                font-size: 20px;
+            }
+
+            .sub input:hover,
+            .sub input:hover {
+                color: #003C9D;
+                background-color: #fff;
+                border: 2px #003C9D solid;
+            }
+
+            #preview {
+                max-width: 300px;
+                height: 130px;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            #preview img {
+                min-width: 100px;
+                max-height: 100px;
+                margin-right: 5px;
+            }
+
+            .img-container {
+                position: relative;
+                display: inline-block;
+                margin-right: 5px;
+            }
+
+            .img-container img {
+                max-width: 300px;
+                max-height: 100px;
+            }
+
+            .delete-btn {
+                position: absolute;
+                top: 0;
+                right: 0;
+                background: gray;
+                color: white;
+                border-radius: 50%;
+                cursor: pointer;
+                padding: 0px 5px;
+            }

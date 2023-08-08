@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+ <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Travel Master</title>
+
+    <!-- CSS FILES -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/index/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/index/bootstrap-icons.css}" rel="stylesheet">
+    <link th:href="@{/css/index/templatemo-leadership-event.css}" rel="stylesheet">
+    
+    <!-- 首頁抬頭修理css -->
+    <link rel="stylesheet" th:href="@{/css/index/indexFIX.css}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg">
+		<div class="container">
+
+			<button class="navbar-toggler" type="button"
+				data-bs-toggle="collapse" data-bs-target="#navbarNav"
+				aria-controls="navbarNav" aria-expanded="false"
+				aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<a th:href="@{/layout/index}" class="navbar-brand mx-auto mx-lg-0"> <i
+				class="fa-solid fa-martini-glass-citrus"></i> <span
+				class="brand-text">TM</span>
+			</a>
+					
+
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="navbar-nav ms-auto">
+					<li class="nav-item"><a class="nav-link click-scroll"
+						th:href="@{/layout/index}"><i class="fa-solid fa-house"></i></a></li>
+
+					<li class="nav-item"><a class="nav-link click-scroll"
+						th:href="@{/toSpot}"><i class="fa-solid fa-location-dot"></i> 景點</a>
+					</li>
+
+					<li class="nav-item"><a class="nav-link click-scroll"
+						th:href="@{/sean/productPageByCount}"><i class="fa-solid fa-calendar-days"></i> 行程</a>
+					</li>
+
+					<li class="nav-item"><a class="nav-link click-scroll"
+						th:href="@{/select}"><i class="fa-solid fa-ticket"></i> 交通</a></li>
+
+					<li class="nav-item"><a class="nav-link click-scroll"
+						th:href="@{/playone}"><i class="fa-solid fa-face-smile-wink"></i>
+							旅伴</a></li>
+
+					<li class="nav-item"><a class="nav-link"
+						th:href="@{/forum/intoForumPage}"><i class="fa-solid fa-comments"></i> 論壇</a></li>
+
+					<li class="nav-item"><a class="nav-link"
+						th:href="@{/sean/CartLoginStatus}"><i
+							class="fa-solid fa-cart-shopping"></i> 購物車</a></li>
+						
+		<li class="nav-item" th:if="${session.mbsession == null}">
+						<a class="nav-link custom-btn btn d-none d-lg-block" th:href="@{/login.controller}">
+							<i class="fa-solid fa-arrow-right-to-bracket"></i> 登入
+						</a>
+					</li>
+
+					<li class="nav-item" th:if="${session.mbsession != null && session.mbsession.memberLevel=='super_user'}">	
+						<div class="dropdown" >
+							  <a class="nav-link custom-btn btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							    Hi,[[${session.mbsession.memberName}]]
+							  </a>
+							
+							  <ul class="dropdown-menu">
+							    <li><a class="dropdown-item" th:href="@{/tobackstage.controller}">後台管理</a></li>
+							    <li><hr class="dropdown-divider" /></li>
+							    <li><a class="dropdown-item" th:href="@{/playone/editById?(id=${session.playonesession.playoneId})}">修改旅伴資料</a></li>
+							    <li><hr class="dropdown-divider" /></li>
+							    <li><a class="dropdown-item" th:href="@{/layout/memberCenter}">會員中心</a></li>
+							    <li><hr class="dropdown-divider" /></li>	
+							    <li><a class="dropdown-item" th:href="@{/logout.controller}">登出</a></li>
+							  </ul>
+						</div>
+					</li>
+					
+					<li class="nav-item" th:if="${session.mbsession != null && session.mbsession.memberLevel=='normal_user'}">	
+						<div class="dropdown" >
+							  <a class="nav-link custom-btn btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							    Hi,[[${session.mbsession.memberName}]]
+							  </a>
+							
+							  <ul class="dropdown-menu">
+							 	<li><a class="dropdown-item" th:href="@{/playone/editById?(id=${session.playonesession.playoneId})}">修改旅伴資料</a></li>
+							    <li><hr class="dropdown-divider" /></li>
+							 	<li><a class="dropdown-item" th:href="@{/layout/memberCenter}">會員中心</a></li>
+							    <li><hr class="dropdown-divider" /></li>
+							    <li><a class="dropdown-item" th:href="@{/logout.controller}">登出</a></li>
+							  </ul>
+						</div>
+					</li>						
+
+				</ul>
+	</nav>
+	
+<!-- JAVASCRIPT FILES -->
+<script src="https://unpkg.com/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+<script th:src="@{/js/index/jquery.min.js}"></script>
+<script th:src="@{/js/index/bootstrap.min.js}"></script>
+<script th:src="@{/js/index/custom.js}"></script>
+<script src="https://kit.fontawesome.com/0a9f356c66.js" crossorigin="anonymous"></script>
+
+	<script>
+	
+	
+	</script>
+
+</body>
+</html>

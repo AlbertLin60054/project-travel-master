@@ -1,0 +1,73 @@
+.modal{
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.chih {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px; /* 添加 border-radius 屬性，設置圓角半徑為 10px */
+}
+
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.title-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.title {
+    text-align: center;
+    font-size: 24px;
+}
+
+.photo-preview {
+    width: 100px;  /* 調整預覽區塊的寬度 */
+    height: 100px; /* 調整預覽區塊的高度 */
+    border: 1px solid #ccc;  /* 加入邊框效果 */
+    margin-bottom: 10px;    /* 調整預覽區塊與上方元素的間距 */
+}
+
+#current-photo {
+    width: 100%;  /* 調整照片的寬度填滿預覽區塊 */
+    height: 100%; /* 調整照片的高度填滿預覽區塊 */
+    object-fit: cover;  /* 調整照片的裁剪方式，以填滿預覽區塊 */
+}
+
+
+

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8" />
+	<title>台灣高鐵班次維護</title>
+	<link th:href="@{/css/ming/TrainMaintainCSS.css}" rel="stylesheet" />
+</head>
+
+<body>
+	<div th:replace="~{layout/dashboardHeader}"></div>
+	<main>
+		<div class="container-fluid px-4">
+			<div class="d-flex justify-content-between align-items-center">
+				<h1 class="mt-4">高鐵班次維護</h1>
+				<div class="d-flex">
+					<button type="button" title="新增單筆資料" class="btn btn-outline-dark mt-3" style="margin: 5px"
+						id="insert" th:onclick="insertRecord()">
+						<i class="fa-solid fa-plus"></i> 新增
+					</button>
+					<button type="button" title="批次新增資料" class="btn btn-outline-dark mt-3" style="margin: 5px"
+						id="batch" th:onclick="openBatchModal()">
+						<i class="fa-solid fa-plus"></i> 批次
+					</button>
+				</div>
+			</div>
+			<hr>
+			<div class="card mb-4">
+				<div class="card-body">
+					<article class="text-center container">
+						<section class="timetable-search-frame bg-grey">
+							<div class="container">
+								<div class="download-ttable"></div>
+								<div class="ha-nav-content"></div>
+
+								<div class="modal fade" aria-hidden="true" id="EditField"
+									aria-labelledby="EditFieldTitle">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header" style="justify-content: center;">
+												<h5 class="modal-title" id="EditFieldTitle">
+													<i class="fa-solid fa-pen-to-square"></i>&nbsp;增修
+												</h5>
+											</div>
+											<div class="modal-body">
+												<div class="input-group">
+													<div class="input-group mb-3 p-2">
+														<span class="input-group-text" id="tranNo">班次</span> <input
+															type="text" class="form-control" id="EditField_tranNo"
+															name="EditField_tranNo" aria-describedby="basic-addon3">
+													</div>
+													<div class="input-group mb-3 w-50 p-2"
+														th:each="station:${stationList}">
+														<span class="input-group-text"
+															th:text="${station.stationName}"></span> <input
+															class="form-control" type="time"
+															th:id="'EditField_ST_' + ${station.stationID}"
+															th:name="'EditField_ST_' + ${station.stationID}"
+															aria-describedby="basic-addon3">
+													</div>
+
+													<div class="w-100 p-2">
+														<button id="EditFieldSubmit" th:onclick="formSubmit()"
+															style="margin: 0px 30px 0px 0px;"
+															class="btn btn-secondary">送出</button>
+														<button style="margin: 0px 0px 0px 30px;"
+															data-bs-dismiss="modal" th:onclick="cancel()"
+															class="btn btn-secondary">取消</button>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div>
+								<table id="queryResult" class="table table-bordered table-striped table-sm display"
+									style="width: 100%;">
+									<thead class="table-light">
+										<tr>
+											<th scope="col" class="align-middle">班次</th>
+											<th scope="col" class="align-middle" th:each="station:${stationList}"
+												th:value="${station.stationID}" th:text="${station.stationName}"></th>
+											<th scope="col" class="align-middle">編輯</th>
+											<th scope="col" class="align-middle">刪除</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+							</div>
+						</section>
+					</article>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" aria-hidden="true" id="BatchUploadModal" aria-labelledby="BatchUploadModalTitle">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header" style="justify-content: center;">
+						<h5 class="modal-title" id="BatchUploadModalTitle">
+							批次新增資料
+						</h5>
+					</div>
+					<div class="modal-body">
+						<div id="FileField" class="container">
+							<div class="drag-file w-100 mb-3 p-2 d-flex justify-content-center"
+								style="border-radius: 15px">
+								<div class="icon">
+									<i class="fas fa-cloud-upload-alt"></i>
+								</div>
+
+								<h6>請將檔案拖放到此處</h6>
+
+								<label for="batchFileInput" class="drag-file-label">選擇檔案</label>
+								<input type="file" id="batchFileInput" name="batchFileInput" accept=".csv"
+									style="display: none">
+								<span id="SelectedFileName">No file selected</span>
+							</div>
+						</div>
+
+						<div class="container">
+							<div class="w-100 p-2 d-flex justify-content-center">
+								<button id="BatchUploadSubmit" th:onclick="uploadBatchData()"
+									class="btn btn-secondary">上傳</button>
+								<button style="margin: 0px 0px 0px 30px;" data-bs-dismiss="modal"
+									th:onclick="cancelBatchUpload()" class="btn btn-secondary">取消</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<input type="hidden" id="dataTableContent" th:value="${dataTableContent}">
+	</main>
+	<div th:replace="~{layout/dashboardFooter}"></div>
+	<!-- <script th:src="@{/js/ming/TrainMaintainJS.js}"></script> -->
+	<script th:inline="javascript">
+		var EditField;
+		var dtDataList;
+		var ACTION_STATE = 0;
+		$(document).ready(function () {
+			dtDataList = JSON.parse(document.querySelector("#dataTableContent").value);
+			$('#queryResult').DataTable({
+				data: dtDataList,
+				/*render: function (data, type) {
+					document.querySelectorAll('td').css('background', '#FFF5EE');
+					return data;
+				}*/
+			});
+			EditField = new bootstrap.Modal(document.getElementById('EditField'));
+		});
+
+		function insertRecord() {
+			ACTION_STATE = 1;
+			document.querySelector("#EditFieldSubmit").innerHTML = "新增";
+			document.querySelector("#EditFieldTitle").innerHTML = `<i class="fa-solid fa-pen-to-square"></i>&nbsp;新增`;
+
+			document.querySelector("#EditField_tranNo").value = "";
+			let StLst = [[${ stationList }]];
+			let current_st = 1;
+			StLst.forEach((st) => {
+				document.querySelector("#EditField_ST_" + st.stationID).value = "";
+				current_st++;
+			});
+			$("#EditField").modal("show");
+			$("#EditField").css("z-index", "1500");
+		}
+
+		function updateTarget(tranNo) {
+			ACTION_STATE = 2;
+			document.querySelector("#EditFieldSubmit").innerHTML = "修改";
+			document.querySelector("#EditFieldTitle").innerHTML = `<i class="fa-solid fa-pen-to-square"></i>&nbsp;修改`;
+			document.querySelector("#EditField_tranNo").readOnly = true;
+			document.querySelector("#EditField_tranNo").value = tranNo;
+			let timeLst;
+			dtDataList.forEach((dl) => {
+				if (dl[0] == tranNo) {
+					timeLst = dl;
+				}
+			});
+			let StLst = [[${ stationList }]];
+			let current_st = 1;
+			StLst.forEach((st) => {
+				document.querySelector("#EditField_ST_" + st.stationID).value = timeLst[current_st];
+				current_st++;
+			});
+			$("#EditField").modal("show");
+			$("#EditField").css("z-index", "1500");
+		}
+
+		function cancel() {
+			EditField.hide();
+			document.querySelector("#EditField_tranNo").readOnly = false;
+			ACTION_STATE = 0;
+		}
+
+		function formSubmit() {
+			let parmObj = {};
+			parmObj["action"] = ACTION_STATE;
+			let tranNo = document.querySelector("#EditField_tranNo").value;
+			let TranInfoList = [];
+			let StLst = [[${ stationList }]];
+			StLst.forEach((st) => {
+				let TranInfo = {};
+				TranInfo["tranNo"] = tranNo;
+				TranInfo["stationID"] = st.stationID;
+				TranInfo["trainArrvialTime"] = document.querySelector("#EditField_ST_" + st.stationID).value;
+				TranInfoList.push(TranInfo);
+			});
+			parmObj["TranInfoList"] = TranInfoList;
+
+
+			let submitForm = document.createElement("form");
+			submitForm.method = "POST";
+			submitForm.action = `trainMaintain-onSubmit`;
+			var tmpInput = document.createElement("input");
+			tmpInput.setAttribute("name", "reqBody");
+			tmpInput.setAttribute("value", JSON.stringify(parmObj));
+			submitForm.appendChild(tmpInput);
+			document.body.appendChild(submitForm);
+			submitForm.submit();
+		}
+
+
+		function deleteTarget(tranNo) {
+			Swal.fire({
+				title: '是否刪除?',
+				icon: 'warning',
+				showCancelButton: true,
+				cancelButtonText: '取消',
+				confirmButtonText: '確定',
+				preConfirm: async () => {
+					console.log("tranNo=" + deleteTarget);
+					try {
+						const response = await fetch(`DeleteTranInfo?tranNo=${tranNo}`);
+						if (!response.ok) {
+							throw new Error(response.statusText);
+						}
+						return await response.json();
+					} catch (error) {
+						Swal.showValidationMessage(
+							`Request failed: ${error}`
+						);
+					}
+				},
+				allowOutsideClick: () => !Swal.isLoading()
+			}).then((result) => {
+				if (result.isConfirmed) {
+					let resultObj = result.value;
+					console.log(resultObj);
+					if (resultObj.result) {
+						Swal.fire(
+							'刪除成功',
+							`紀錄刪除成功(班次="${resultObj.id}")`,
+							'success'
+						).then(() => {
+							// 成功刪除後重新導向
+							location.href = 'trainMaintain';
+						});
+					} else {
+						Swal.fire(
+							'刪除失敗',
+							`紀錄刪除失敗(班次="${resultObj.id}")`,
+							'error'
+						);
+					}
+				}
+			});
+		}
+
+		// drag and drop config
+		const batchFileInput = document.querySelector("#batchFileInput");
+		const dropZone = document.querySelector("#FileField");
+
+		dropZone.addEventListener("dragenter", function (e) {
+			e.preventDefault();
+		});
+
+		dropZone.addEventListener("dragover", function (e) {
+			e.preventDefault();
+		});
+
+		dropZone.addEventListener("dragleave", function (e) {
+			e.preventDefault();
+		});
+		dropZone.addEventListener("drop", function (e) {
+			e.preventDefault();
+
+			const fileName = e.dataTransfer.files[0].name;
+			//document.querySelector("#SelectedFileName").textContent = fileName;
+
+
+			batchFileInput.files = e.dataTransfer.files;
+			batchFileInput.dispatchEvent(new Event('change'));
+		});
+
+		batchFileInput.addEventListener("change", function (e) {
+			if (e.target.files.length > 0) {
+				if (e.target.files[0].type != "text/csv") {
+					Swal.fire(
+						"選擇檔案失敗",
+						"僅支援CSV檔案格式",
+						"error"
+					);
+					return;
+				}
+				const fileName = e.target.files[0].name;
+				document.querySelector("#SelectedFileName").textContent = fileName;
+			} else {
+				document.querySelector("#SelectedFileName").textContent = "No file selected";
+			}
+		});
+
+		//  Batch Modal Show/Hide
+		function openBatchModal() {
+			batchFileInput.value = "";
+			batchFileInput.dispatchEvent(new Event('change'));
+			$("#BatchUploadModal").modal("show");
+			$("#BatchUploadModal").css("z-index", "1500");
+		}
+
+		function cancelBatchUpload() {
+			$("#BatchUploadModal").modal("hide");
+		}
+
+		// Handle batch file upload
+		function uploadBatchData() {
+			let fileInput = document.getElementById("batchFileInput");
+			let file = fileInput.files[0];
+			if (file) {
+				let formData = new FormData();
+				formData.append("file", file);
+
+				fetch("services/BatchUploadTrainInfo", {
+					method: "POST",
+					body: formData
+				})
+					.then(response => response.json())
+					.then(data => {
+						if (data.result) {
+							Swal.fire(
+								"上傳成功",
+								data.msg,
+								"success"
+							).then(() => {
+								location.reload();
+							});
+						} else {
+							Swal.fire(
+								"上傳失敗",
+								data.msg,
+								"error"
+							);
+						}
+					})
+					.catch(error => {
+						console.error("Error:", error);
+						Swal.fire(
+							"上傳失敗",
+							data.msg,
+							"error"
+						);
+					});
+
+				cancelBatchUpload();
+			} else {
+				Swal.fire(
+					"錯誤",
+					"請選擇要上傳的檔案",
+					"error"
+				);
+			}
+		}
+	</script>
+	<script th:src="@{/js/ming/sweetalert2.js}"></script>
+</body>
+
+</html>

@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+
+<head>
+<meta charset="UTF-8">
+<title>新 增 旅 伴 資 料</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link
+	href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css"
+	rel="stylesheet" />
+<link
+	href="https://cdn.datatables.net/v/dt/dt-1.13.4/datatables.min.css"
+	rel="stylesheet" />
+<style>
+.delete, .update, .savedataleo {
+	display: block;
+	margin: 0 auto;
+	font-size: 1.2em;
+	/* 調整字型大小 */
+	cursor: pointer;
+	/* 變更游標樣式為手指 */
+	border: none;
+	/* 移除按鈕邊框 */
+	background-color: transparent;
+	/* 移除按鈕背景色 */
+}
+
+.photo-div {
+	margin: 0;
+	height: 150px;
+}
+
+.photo {
+	margin: 0 auto;
+	max-width: 100%;
+	max-height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.button-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 30px;
+}
+
+.button-container button {
+	margin: 0 10px;
+	padding: 10px 20px;
+}
+
+.menu {
+	cursor: pointer;
+	font-size: 20px;
+}
+</style>
+<script>
+        function validateForm() {
+            const idInput = document.getElementById("id");
+            if (!idInput.value) {
+                idInput.value = "0";
+            }
+            return true;
+        }
+    </script>
+</head>
+
+<body>
+	<div th:replace="~{layout/dashboardHeader}"></div>
+	<main>
+		<div class="container-fluid px-4">
+			<div class="button-container" style="margin: 10px;">
+				<button class="menu all btn btn-primary" id="all-data-btn">全部旅伴資料</button>
+				<button class="menu find btn btn-primary" id="find-data-btn">查詢旅伴資料</button>
+				<button class="menu new btn btn-primary" id="new-data-btn">新增旅伴資料</button>
+				<button class="menu ana btn btn-primary" id="ana-data-btn">分析旅伴資料</button>
+
+				<script>
+                        //用以再按一下按鈕移除頁面
+                        var pageInserted1 = false;
+                        var pageInserted2 = false;
+                        var pageInserted3 = false;
+                        var pageInserted4 = false;
+
+                        var newBtn = document.getElementById("ana-data-btn");
+                        newBtn.addEventListener("click", function () {
+                            if (!pageInserted4) {
+                                var xhr = new XMLHttpRequest();
+                                xhr.open("GET", "/TM/playone/Analysis");
+                                xhr.onload = function () {
+                                    if (xhr.status === 200) {
+                                        var newContent = xhr.responseText;
+                                        var container = document.getElementById("container");
+                                        container.innerHTML = newContent;
+                                        // 載入腳本
+                                        var script = document.createElement('script');
+                                        script.src = window.location.origin + "/TM/js/leo/analysis.js";
+                                        document.body.appendChild(script);
+
+										var link = document.createElement("link");
+                                        link.rel = "stylesheet";
+                                        link.type = "text/css";
+                                        link.href = window.location.origin + "/TM/css/leo/InsertPlayone.css";
+                                        link.id = "insertplayone-css";
+                                        document.head.appendChild(link);
+                                        
+                                        var oldLinks = document.querySelectorAll("#searchplayone-css");
+                                        for (let i = 0; i < oldLinks.length; i++) {
+                                            oldLinks[i].parentNode.removeChild(oldLinks[i]);
+                                        }
+                                        pageInserted1 = false;
+                                        pageInserted2 = false;
+                                        pageInserted3 = false;
+                                        pageInserted4 = true;
+                                    }
+                                };
+                                xhr.send();
+                            } else {
+                                var container = document.getElementById("container");
+                                container.innerHTML = '';
+
+                                var oldLinks = document.querySelectorAll("#insertplayone-css");
+                                for (let i = 0; i < oldLinks.length; i++) {
+                                    oldLinks[i].parentNode.removeChild(oldLinks[i]);
+                                }
+
+                                pageInserted4 = false;
+                            }
+                        });
+                        
+                        var newBtn = document.getElementById("new-data-btn");
+                        newBtn.addEventListener("click", function () {
+                            if (!pageInserted3) {
+                                var xhr = new XMLHttpRequest();
+                                xhr.open("GET", "/TM/playone/new");
+                                xhr.onload = function () {
+                                    if (xhr.status === 200) {
+                                        var newContent = xhr.responseText;
+                                        var container = document.getElementById("container");
+                                        container.innerHTML = newContent;
+                                        // 載入腳本
+                                        var script = document.createElement('script');
+                                        script.src = window.location.origin + "/TM/js/leo/InsertPlayone.js";
+                                        document.body.appendChild(script);
+
+                                        var link = document.createElement("link");
+                                        link.rel = "stylesheet";
+                                        link.type = "text/css";
+                                        link.href = window.location.origin + "/TM/css/leo/InsertPlayone.css";
+                                        link.id = "insertplayone-css";
+                                        document.head.appendChild(link);
+
+                                        var oldLinks = document.querySelectorAll("#searchplayone-css");
+                                        for (let i = 0; i < oldLinks.length; i++) {
+                                            oldLinks[i].parentNode.removeChild(oldLinks[i]);
+                                        }
+                                        pageInserted1 = false;
+                                        pageInserted2 = false;
+                                        pageInserted3 = true;
+                                        pageInserted4 = false;
+                                    }
+                                };
+                                xhr.send();
+                            } else {
+                                var container = document.getElementById("container");
+                                container.innerHTML = '';
+
+                                var oldLinks = document.querySelectorAll("#insertplayone-css");
+                                for (let i = 0; i < oldLinks.length; i++) {
+                                    oldLinks[i].parentNode.removeChild(oldLinks[i]);
+                                }
+
+                                pageInserted3 = false;
+                            }
+                        });
+
+                        var newBtn = document.getElementById("find-data-btn");
+                        newBtn.addEventListener("click", function () {
+                            if (!pageInserted2) {
+                                var xhr = new XMLHttpRequest();
+                                xhr.open("GET", "/TM/playone/findone");
+                                xhr.onload = function () {
+                                    if (xhr.status === 200) {
+                                        var newContent = xhr.responseText;
+                                        var container = document.getElementById("container");
+                                        container.innerHTML = newContent;
+
+                                        var link = document.createElement("link");
+                                        link.rel = "stylesheet";
+                                        link.type = "text/css";
+                                        link.href = window.location.origin + "/TM/css/leo/SearchPlayone.css";
+                                        link.id = "searchplayone-css";
+                                        document.head.appendChild(link);
+
+                                        var oldLinks = document.querySelectorAll("#insertplayone-css");
+                                        for (let i = 0; i < oldLinks.length; i++) {
+                                            oldLinks[i].parentNode.removeChild(oldLinks[i]);
+                                        }
+                                        pageInserted1 = false;
+                                        pageInserted2 = true;
+                                        pageInserted3 = false;
+                                        pageInserted4 = false;
+                                    }
+                                };
+                                xhr.send();
+                            } else {
+                                var container = document.getElementById("container");
+                                container.innerHTML = '';
+
+                                var oldLinks = document.querySelectorAll("#insertplayone-css");
+                                for (let i = 0; i < oldLinks.length; i++) {
+                                    oldLinks[i].parentNode.removeChild(oldLinks[i]);
+                                }
+
+                                pageInserted2 = false;
+                            }
+                        });
+
+
+                        var allBtn = document.getElementById("all-data-btn");
+                        allBtn.addEventListener("click", function () {
+                            if (!pageInserted1) {
+                                var xhr = new XMLHttpRequest();
+                                xhr.open("GET", "/TM/playone/findall");
+                                xhr.onload = function () {
+                                    if (xhr.status === 200) {
+                                        var newContent = xhr.responseText;
+                                        var container = document.getElementById("container");
+                                        container.innerHTML = newContent;
+
+                                        pageInserted1 = true;
+                                        pageInserted2 = false;
+                                        pageInserted3 = false;
+                                        pageInserted4 = false;
+                                    }
+                                };
+                                xhr.send();
+                            } else {
+                                var container = document.getElementById("container");
+                                container.innerHTML = '';
+
+                                var oldLinks = document.querySelectorAll("#insertplayone-css");
+                                for (let i = 0; i < oldLinks.length; i++) {
+                                    oldLinks[i].parentNode.removeChild(oldLinks[i]);
+                                }
+
+                                pageInserted1 = false;
+                            }
+                        });
+
+
+
+
+                    </script>
+
+			</div>
+			<div id="container" style="display: flex; justify-content: center; align-items: center;"></div>
+			<div class="card mb-4">
+				<div class="card-header">
+					<i class="fas fa-table me-1"></i> 新增旅伴資料表
+				</div>
+				<div class="card-body">
+					<table id="datatableleo" class="fix">
+						<thead>
+							<tr>
+								<th>編號</th>
+								<th>暱稱</th>
+								<th>照片</th>
+								<th>名稱</th>
+								<th>性別</th>
+								<th>生日</th>
+								<th>年齡</th>
+								<th>星座</th>
+								<th>一句話</th>
+								<th>介紹</th>
+								<th id="update">修改</th>
+								<th id="delete">刪除</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th>編號</th>
+								<th>暱稱</th>
+								<th>照片</th>
+								<th>名稱</th>
+								<th>性別</th>
+								<th>生日</th>
+								<th>年齡</th>
+								<th>星座</th>
+								<th>一句話</th>
+								<th>介紹</th>
+							</tr>
+						</tfoot>
+						<tbody>
+							<th:block th:each="playone:${playone}" th:object="${playone}">
+								<tr class="playoneTr">
+									<td><input type="text" disabled class="id" id="id"
+										name="id" th:value="${playone.playoneId}" style="width: 95%"></td>
+									<td><input type="text" disabled class="nic" id="nic"
+										name="nic" th:value="${playone.playoneNick}"
+										style="width: 95%" autocomplete="off" autofocus required
+										maxlength="15">
+										<div th:id="'nickNameCheck_'+${playone.playoneId}"
+											style="display: flex; justify-content: center; align-items: center; margin: 0;">
+										</div></td>
+									<td>
+										<!-- 建立一個輪播圖元素，id 根據 playone 的 id 來動態產生 -->
+										<div th:id="'carouselExampleIndicators'+${playone.PlayoneId}"
+											class="carousel slide photo-div">
+											<!-- 輸入檔案，用於上傳圖片 -->
+											<form method="post" th:action="@{/playone/imgedit}"
+												enctype="multipart/form-data">
+												<input type="submit" class="photoInput" name="updateimg"
+													th:value="${playone.PlayoneId}" disabled
+													style="display: none;">
+											</form>
+											<!-- 輪播圖指示器 -->
+											<ol class="carousel-indicators">
+												<th:block th:each="img, stat : ${playone.playoneImgs}">
+													<li
+														th:data-target="'#carouselExampleIndicators' + ${playone.playoneId}"
+														th:data-slide-to="${stat.index}"
+														th:class="${stat.first} ? 'active' : ''"></li>
+												</th:block>
+											</ol>
+											<!-- 輪播圖內容 -->
+											<div class="carousel-inner">
+												<th:block th:each="img, stat : ${playone.playoneImgs}">
+													<div class="carousel-item"
+														th:class="${stat.first} ? 'carousel-item active' : 'carousel-item'">
+														<img
+															th:src="'data:image/jpeg;base64,' + ${img.base64Photo}"
+															class="d-block w-100 img" alt="Playone photo"
+															style="height: 130px;max-width:130px">
+													</div>
+													<input type="hidden" class="originalImg" id="originalImg"
+														name="originalImg" th:value="${img.getBase64Photo()}">
+												</th:block>
+											</div>
+											<a class="carousel-control-prev"
+												th:data-target="'#carouselExampleIndicators' + ${playone.playoneId}"
+												role="button" data-slide="prev"> <span
+												class="carousel-control-prev-icon" aria-hidden="true"></span>
+												<span class="visually-hidden">Previous</span>
+											</a> <a class="carousel-control-next"
+												th:data-target="'#carouselExampleIndicators' + ${playone.playoneId}"
+												role="button" data-slide="next"> <span
+												class="carousel-control-next-icon" aria-hidden="true"></span>
+												<span class="visually-hidden">Next</span>
+											</a>
+										</div>
+									</td>
+									<td><input type="text" disabled class="name" id="name"
+										name="name" th:value="${playone.playoneName}"
+										style="width: 95%" required maxlength="15"></td>
+									<td><input type="text" disabled class="sex" id="sex"
+										name="sex" th:value="${playone.playoneSex}" style="width: 95%"
+										required maxlength="3"></td>
+									<td><input type="text" disabled class="age" id="age"
+										name="age" th:value="${playone.playoneBirth}" style="width: 95%"
+										required maxlength="8"></td>
+									<td><input type="text" disabled class="age1" id="age1"
+										name="age1" th:value="${playone.age}" style="width: 95%"
+										required maxlength="8"></td>
+									<td><input type="text" disabled class="zodiac" id="zodiac"
+										name="zodiac" th:value="${playone.Zodiac}" style="width: 95%"
+										required maxlength="8"></td>
+									<td><input type="text" disabled class="ins" id="ins"
+										name="ins" th:value="${playone.playoneInterest}"
+										style="width: 95%" required maxlength="200"></td>
+									<td><textarea disabled class="int" id="int" name="int"
+											style="width: 95%; resize: vertical;" required
+											maxlength="200" th:text="${playone.playoneIntroduce}"></textarea>
+									</td>
+									<td>
+										<form th:method="put" th:action="@{/playone/edit}"
+											enctype="multipart/form-data">
+											<button type="button" class="update updateBtn"
+												id=updateBtn${playone.playoneId}” value="">
+												<i class="fa-solid fa-pen-to-square"></i>
+											</button>
+											<input type="hidden" class="id1" name="id" th:value="${''}">
+											<input type="hidden" class="nic1" name="nic" th:value="${''}">
+											<input type="hidden" class="name1" name="name"
+												th:value="${''}"> <input type="hidden" class="sex1"
+												name="sex" th:value="${''}"> <input type="hidden"
+												class="age1" name="age" th:value="${''}"> <input
+												type="hidden" class="ins1" name="ins" th:value="${''}">
+											<input type="hidden" class="int1" name="int" th:value="${''}">
+											<button type="submit" class="savedataleo" id="saveBtnleo"
+												value="" style="display: none">
+												<i class="fa-solid fa-check fa-beat"></i>
+											</button>
+										</form>
+									</td>
+									<td>
+										<div th:each="p : ${playone}">
+											<form th:method="put" th:action="@{/playone/delete}">
+												<input type="hidden" name="playoneId"
+													th:value="${p.playoneId}" />
+												<button type="submit" class="delete">
+													<i class="fa-solid fa-trash-can"></i>
+												</button>
+											</form>
+										</div>
+									</td>
+								</tr>
+							</th:block>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</main>
+	</div>
+	<div th:replace="~{layout/dashboardFooter}"></div>
+	<script src="https://kit.fontawesome.com/0a9f356c66.js"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+		integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+		integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+	<script
+		src="https://cdn.datatables.net/v/dt/dt-1.13.4/datatables.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>	
+	<script type="text/javascript">
+        function readURL(input, imgElement, originalImgElement) {
+            // 當文件選擇框的值發生變化時觸發的函數
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    // 將圖片元素的src屬性設置為讀取的圖片數據URL
+                    imgElement.attr('src', e.target.result);
+                    // 從圖片數據URL中提取Base64編碼的圖片數據並存儲在隱藏的input元素中
+                    var base64Data = e.target.result.replace(/^data:image\/(png|jpeg|jpg);base64,/, "");
+                    originalImgElement.val(base64Data);
+                }
+                // 讀取文件並觸發onload事件
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $(function () {
+            var originalNicValue;
+            // 當class為"update"的元素被點擊時觸發的函數
+            $(".update").click(function () {
+                originalNicValue = $(this).closest('tr').find('.nic').val();
+                console.log(originalNicValue);
+                const row = $(this).closest("tr");
+                // 將該行的指定元素的disabled屬性設置為false，啟用輸入框
+                row.find(".nic,.photoInput,.img,.name,.sex,.age,.ins,.int").prop("disabled", false);
+                row.find(".photoInput").prop("disabled", false);
+                row.find(".photo-div").css("cursor", "pointer");
+                $(this).hide();
+                row.find(".savedataleo").show();
+                // 為圖片元素添加點擊事件監聽器
+                row.find(".img").click(function () {
+                    row.find(".photoInput").click();
+                });
+                // 為文件輸入框添加變化事件監聽器
+                row.find(".photoInput").change(function () {
+                    readURL(this, row.find(".img"), row.find(".originalImg"));
+                });
+                var idValue = $(this).closest('tr').find('#id').val();
+                console.log(idValue);
+            });
+
+            $(".savedataleo").click(function () {
+                // 獲取該行的各欄位的值
+                var idValue = $(this).closest('tr').find('.id').val();
+                var nicValue = $(this).closest('tr').find('.nic').val();
+                var nameValue = $(this).closest('tr').find('.name').val();
+                var sexValue = $(this).closest('tr').find('.sex').val();
+                var ageValue = $(this).closest('tr').find('.age').val();
+                var insValue = $(this).closest('tr').find('.ins').val();
+                var intValue = $(this).closest('tr').find('.int').val();
+                // 將上述的值設定為對應欄位的值
+                $(this).closest('tr').find('.id1').val(idValue);
+                $(this).closest('tr').find('.nic1').val(nicValue);
+                $(this).closest('tr').find('.name1').val(nameValue);
+                $(this).closest('tr').find('.sex1').val(sexValue);
+                $(this).closest('tr').find('.age1').val(ageValue);
+                $(this).closest('tr').find('.ins1').val(insValue);
+                $(this).closest('tr').find('.int1').val(intValue);
+                // 檢查是否有選擇新的圖片檔案
+                var photoInput = $(this).closest('tr').find('.photoInput')[0];
+                if (!photoInput.files || photoInput.files.length === 0) {
+                    // 如果沒有選擇新的圖片，則將原圖的值設定回到原來的 base64 圖片數據
+                    var originalBase64Data = $(this).closest('tr').find('.originalImg').val();
+                    $(this).closest('tr').find('#img1').val(originalBase64Data);
+                }
+            });
+            // 監聽 .nic 輸入框的失焦事件
+            $('tbody').on('blur', '.nic', function () {
+                var nicValue = $(this).val();
+                var idValue = $(this).closest('tr').find('.id').val();
+                if (nicValue.trim() === "") {
+                    // 檢查暱稱是否為空
+                    // 如果暱稱為空，顯示錯誤提示並禁用提交按鈕
+                    $("#nickNameCheck_" + idValue).html('<span class="text-danger" style="color:red;">請輸入暱稱</span>');
+                    $('button[type="submit"]').attr("disabled", true);
+                    return; // 直接返回，不發送AJAX請求
+                }
+                if (nicValue === originalNicValue) {
+                    // 如果輸入的暱稱與原始暱稱相同，顯示成功提示並啟用提交按鈕
+                    $("#nickNameCheck_" + idValue).html('<span class="text-success" style="color:green;">暱稱可用</span>');
+                    $('button[type="submit"]').attr("disabled", false);
+                    return;
+                }
+
+                // 使用AJAX向指定的URL發送POST請求
+                $.ajax({
+                    url: "/TM/CNController",
+                    method: "POST",
+                    data: {
+                        playoneNick: nicValue,
+                    },
+                    success: function (data) {
+                        if (data != "0") {
+                            // 如果暱稱已存在，顯示錯誤提示並禁用提交按鈕
+                            $("#nickNameCheck_" + idValue).html('<span class="text-danger" style="color:red;">暱稱已存在</span>');
+                            $('button[type="submit"]').attr("disabled", true);
+                        } else {
+                            // 如果暱稱可用，顯示成功提示並啟用提交按鈕
+                            $("#nickNameCheck_" + idValue).html('<span class="text-success" style="color:green;">暱稱可用</span>');
+                            $('button[type="submit"]').attr("disabled", false);
+                        }
+                    },
+                });
+            });
+
+            // 當class為"delete"的元素被點擊時觸發的函數
+            $(".delete").click(function () {
+                // 顯示刪除確認消息
+                const confirmMsg = "確定要刪除嗎？";
+                if (!confirm(confirmMsg)) {
+                    return false;
+                }
+                // 提交表單
+                $(this).closest("form").submit();
+            });
+            // 當class為"savedataleo"的元素被點擊時觸發的函數
+            $(".savedataleo").click(function (e) {
+                e.preventDefault(); // 阻止表單的預設提交行為
+                if (confirm('確定要保存這筆資料嗎？')) {
+                    // 確認保存後提交表單
+                    const form = $(this).closest('form');
+                    form.submit();
+                }
+            });
+            $(document).ready(function () {
+                // 初始化dataTable
+                $('#datatableleo').DataTable({
+                    "searching": false,
+                });
+            });
+        });
+
+    </script>
+</body>
+
+</html>

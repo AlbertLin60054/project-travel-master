@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>新 增 旅 伴 資 料</title>
+<link rel="stylesheet" th:href="@{/css/leo/InsertPlayone.css}" />
+</head>
+<body>
+	<div class="leo">
+		<form method="post" th:action="@{/playone/post}"
+			enctype="multipart/form-data" id="subbb">
+			<fieldset>
+				<div class="st1">
+					<label for="account1" class="t1">旅伴暱稱：</label> <input type="text"
+						class="checknick" id="account1" name="playoneNick"
+						autocomplete="off" size="20" autofocus required maxlength="15">
+				</div>
+				<div id="nickNameStatus"
+					style="display: flex; justify-content: center; align-items: center; margin: 0;"></div>
+				<div class="st1">
+					<label for="account1" class="t1">旅伴照片：</label> <input type="file"
+						name="playonePhoto" id="playonePhoto" multiple>
+					<div id="preview"></div>
+				</div>
+				<div class="st1">
+					<label for="account1" class="t1">旅伴姓名：</label> <input type="text"
+						id="account1" name="playoneName" autocomplete="off" size="20"
+						autofocus required maxlength="20">
+				</div>
+				<div class="st1">
+					<label for="account1" class="t1">旅伴性別：</label> <input type="radio"
+						name="playoneSex" value="男" id="m1" required><label
+						for="m1">男</label> <label> <input type="radio"
+						name="playoneSex" value="女" id="">女
+					</label>
+				</div>
+				<div class="st1">
+					<label for="account1" class="t1">旅伴生日：</label> <input type="text"
+						id="account1" name="playoneBirth" autocomplete="off" size="20"
+						autofocus required placeholder="例如:19960607" maxlength="8">
+				</div>
+				<div class="st1">
+					<label for="account1" class="t1">一句話：</label> <input type="text"
+						id="account1" name="playoneInterest" autocomplete="off" size="20"
+						autofocus required maxlength="200">
+				</div>
+				<div class="st1">
+					<label for="account1" class="t1">旅伴介紹：</label>
+					<textarea id="account1" name="playoneIntroduce" autocomplete="off"
+						rows="4" style="width: 100%;" required maxlength="200"></textarea>
+				</div>
+
+			</fieldset>
+			<div class="sub">
+				<input type="hidden" id="deletedImages" name="deletedImages">
+				<input type="submit" value="送出" id="submitBtn"> <input
+					type="reset" value="清除">
+			</div>
+		</form>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script th:src="@{/js/leo/InsertPlayone.js}"></script>
+</body>
+</html>

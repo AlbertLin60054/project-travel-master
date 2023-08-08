@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<title>台灣高鐵訂票及選位系統</title>
+<link th:href="@{/css/ming/ChoosePageCSS.css}" rel="stylesheet" />
+</head>
+
+<body th:onload="initSeats();">
+	<div th:replace="~{layout/indexHeader}"></div>
+
+	<main class="row">
+		<div class="col-1"></div>
+		<div class="col-10">
+			<table class="table">
+				<tr class="row">
+					<td class="col-7">
+						<div class="article">
+							<div class="section">
+								<div class="row">
+									<h2 class="col  text-center">台灣高鐵座位圖</h2>
+								</div>
+								<h6 class="col  text-center">
+									<i class="fa-solid fa-caret-down"></i>&nbsp;&nbsp;請點選座位完成訂票
+								</h6>
+								<div class="row">
+									<div class="col">
+										<table class="table table-bordered border-dark table-sm">
+											<tbody id="seats_container" class="text-center">
+												<!-- Init by function initSeats() -->
+											</tbody>
+										</table>
+									</div>
+
+								</div>
+							</div>
+						</div>
+					</td>
+					<td class="col-1"></td>
+					<td class="col-4">
+						<div class="aside">
+							<div class="row">
+								<div class="section">
+									<h2 style="text-align: center;">訂票紀錄</h2>
+									<div class="input-group mb-3 p-2">
+										<span class="input-group-text">會員姓名</span><input type="text"
+											class="form-control"
+											th:value="${session.mbsession.memberName}">
+									</div>
+									<div class="row">
+										<div class="form-floating mb-3 col-6">
+											<div class="form-control fs-5" id="DepartureDate"
+												style="text-align: center;"
+												th:text="${trainTimeInfo.getDepartureDate()}"></div>
+											<label for="DepartureDate">出發日期 :</label>
+										</div>
+										<div class="form-floating mb-3 col-6">
+											<div class="form-control fs-5" id="TranNo"
+												style="text-align: center;"
+												th:text="${trainTimeInfo.getTranNo()}"></div>
+											<label for="TranNo">車次 :</label>
+										</div>
+									</div>
+									<div class="row">
+										<div class="form-floating mb-3 col-6">
+											<div class="form-control fs-5" id="DepartureTime"
+												style="text-align: center;"
+												th:text="${trainTimeInfo.getDepartureTime()}"></div>
+											<label for="DepartureTime">發車時間 :</label>
+										</div>
+										<div class="form-floating mb-3 col-6">
+											<div class="form-control fs-5" id="ArrivalTime"
+												style="text-align: center;"
+												th:text="${trainTimeInfo.getArrivalTime()}"></div>
+											<label for="ArrivalTime">抵達時間 :</label>
+										</div>
+									</div>
+									<div class="row">
+										<div class="form-floating mb-3 col-6">
+											<div class="form-control fs-5" id="DepartureStation"
+												style="text-align: center;"
+												th:text="${trainTimeInfo.getDepartureST()}"></div>
+											<label for="DepartureStation">出發站 ：</label>
+										</div>
+										<div class="form-floating mb-3 col-6">
+											<div class="form-control fs-5" id="ArrivalStation"
+												style="text-align: center;"
+												th:text="${trainTimeInfo.getDestinationST()}"></div>
+											<label for="ArrivalStation">抵達站 ：</label>
+										</div>
+									</div>
+									<div class="mb-3 p-2">
+										<label for="selectedSeats">已選座位 ： </label>
+										<div class="form-control" id="selectedSeats">&nbsp;</div>
+									</div>
+									<div class="row">
+										<div class="form-floating mb-3 col-6">
+											<div class="form-control fs-5" id="price"
+												style="text-align: center;"
+												th:text="${singlePrice} + '&nbsp;元'"></div>
+											<label for="price">每張單價 ：</label>
+										</div>
+										<div class="form-floating mb-3 col-6">
+											<div class="form-control fs-5" id="priceTotal"
+												style="text-align: center;">0&nbsp;元</div>
+											<label for="priceTotal">總共票價 ：</label>
+										</div>
+									</div>
+									<div style="text-align: center;">
+										<button id="submitForm" class="btn btn-dark">加入購物車</button>
+										
+										<button type="reset" class="btn btn-dark"
+											th:onclick="cancel()">取消訂票</button>
+									</div>
+									<input type="hidden" id="formInputVal_memberId"
+										name="formInputVal_memberId"
+										th:value="${session.mbsession.memberId}" /> <input
+										type="hidden" id="formInputVal_DepartureDate"
+										name="formInputVal_DepartureDate"
+										th:value="${trainTimeInfo.getDepartureDate()}" /> <input
+										type="hidden" id="formInputVal_TranNo"
+										name="formInputVal_TranNo"
+										th:value="${trainTimeInfo.getTranNo()}" /> <input
+										type="hidden" id="formInputVal_DepartureTime"
+										name="formInputVal_DepartureTime"
+										th:value="${trainTimeInfo.getDepartureTime()}" /> <input
+										type="hidden" id="formInputVal_ArrivalTime"
+										name="formInputVal_ArrivalTime"
+										th:value="${trainTimeInfo.getArrivalTime()}" /> <input
+										type="hidden" id="formInputVal_DepartureStation"
+										name="formInputVal_DepartureStation"
+										th:value="${DepartureST_ID}" /> <input type="hidden"
+										id="formInputVal_ArrivalStation"
+										name="formInputVal_ArrivalStation"
+										th:value="${DestinationST_ID}" /> <input type="hidden"
+										id="formInputVal_selectedSeats"
+										name="formInputVal_selectedSeats" /> <input type="hidden"
+										id="formInputVal_price" name="formInputVal_price"
+										th:value="${singlePrice}" /> <input type="hidden"
+										id="formInputVal_priceTotal" name="formInputVal_priceTotal" />
+
+									<input type="hidden" id="singlePrice" th:value="${singlePrice}">
+								</div>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</main>
+
+	<div th:replace="~{layout/indexFooter}"></div>
+	<script th:src="@{/js/ming/sweetalert2.js}"></script>
+
+	<script th:inline="javascript">
+		function createBtn(content) {
+			let td = document.createElement("td");
+			let input_btn = document.createElement("input");
+			td.appendChild(input_btn);
+			input_btn.id = content;
+			input_btn.name = "seat";
+			input_btn.type = "checkbox";
+			input_btn.classList.add("btn-check");
+			input_btn.autocomplete = "off";
+			input_btn.onchange = show;
+
+
+			let input_btn_lbl = document.createElement("label");
+			td.appendChild(input_btn_lbl);
+			input_btn_lbl.classList.add("btn");
+			input_btn_lbl.classList.add("btn-secondary");
+
+			input_btn.onclick = () => {
+				if (input_btn.checked) {
+					input_btn_lbl.classList.remove("btn-secondary");
+					input_btn_lbl.classList.add("btn-dark");
+
+				} else {
+					input_btn_lbl.classList.remove("btn-dark");
+					input_btn_lbl.classList.add("btn-secondary");
+				}
+			};
+
+			input_btn_lbl.setAttribute("for", content);
+			input_btn_lbl.innerHTML = content;
+			return td;
+		}
+
+		function initSeats() {
+			const rowNum = 10;
+			let seatChar = ['A', 'B', 'C', 'D', 'E'];
+			let seats_container = document.getElementById("seats_container");
+			let tr = document.createElement("tr");
+			let cnt = 0;
+			for (let i = 0; i < seatChar.length + 1; i++) {
+				if (i == 3) {
+					let sideWay = document.createElement("td");
+					sideWay.innerHTML = "走道";
+					sideWay.classList.add("align-middle");
+					sideWay.rowSpan = rowNum;
+					sideWay.style = "text-align:center; width:55px";
+					tr.appendChild(sideWay);
+					continue;
+				}
+				tr.appendChild(createBtn("01" + seatChar[cnt]));
+				cnt++;
+			}
+			seats_container.appendChild(tr);
+			for (let i = 2; i <= rowNum; i++) {
+				let trTmp = document.createElement("tr");
+				for (let j = 0; j < seatChar.length; j++) {
+					trTmp.appendChild(createBtn(i.toString().padStart(2, '0')
+						+ seatChar[j]));
+				}
+				seats_container.appendChild(trTmp);
+			}
+		}
+		function show() {
+			let selectedSeats = document.getElementsByName("seat");
+			let p = document.getElementById("selectedSeats");
+			p.innerHTML = "&nbsp;";
+			let p_innerHTML = "";
+			let selectedCnt = 0;
+			for (let i = 0; i < selectedSeats.length; i++) {
+				if (selectedSeats[i].checked == true) {
+					selectedCnt++;
+					p_innerHTML = p_innerHTML + " [ " + selectedSeats[i].id
+						+ " ] ";
+
+				}
+			}
+			if (selectedCnt > 0) {
+				p.innerHTML = p_innerHTML;
+				p_innerHTML = p_innerHTML.replaceAll(']  [', '] , [').replaceAll(' ', '').replaceAll('[', '').replaceAll(']', '');
+				console.log(p_innerHTML);
+				document.querySelector("#formInputVal_selectedSeats").value = p_innerHTML;
+			}
+			let priceTotal = document.querySelector("#singlePrice").value * selectedCnt;
+			document.querySelector("#priceTotal").innerHTML = priceTotal + "&nbsp;元";
+			document.querySelector("#formInputVal_priceTotal").value = priceTotal;
+		}
+
+		function cancel() {
+			Swal.fire({
+				title: '是否取消訂票?',
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: '確定',
+				cancelButtonText: '取消'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					var timeoutID = window.setTimeout((() => location.href = `select`), 5000);
+					Swal.fire(
+						'您已取消訂票，即將返回查詢頁面',
+					).then((result_in) => {
+						if (result_in.isConfirmed) {
+							window.clearTimeout(timeoutID);
+							location.href = `select`;
+						}
+					});
+				}
+			})
+		}
+
+		$(document).ready(function () {
+    $('#submitForm').on('click', function (e) {
+        e.preventDefault();
+        Swal.fire({
+            title: '是否加入購物車?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '確定',
+            cancelButtonText: '繼續訂票'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let formData = {};
+                formData["formInputVal_memberId"] = document.querySelector("#formInputVal_memberId").value;
+                formData["formInputVal_DepartureDate"] = document.querySelector("#formInputVal_DepartureDate").value;
+                formData["formInputVal_TranNo"] = document.querySelector("#formInputVal_TranNo").value;
+                formData["formInputVal_DepartureTime"] = document.querySelector("#formInputVal_DepartureTime").value;
+                formData["formInputVal_ArrivalTime"] = document.querySelector("#formInputVal_ArrivalTime").value;
+                formData["formInputVal_DepartureStation"] = document.querySelector("#formInputVal_DepartureStation").value;
+                formData["formInputVal_ArrivalStation"] = document.querySelector("#formInputVal_ArrivalStation").value;
+                formData["formInputVal_selectedSeats"] = document.querySelector("#formInputVal_selectedSeats").value;
+                formData["formInputVal_price"] = document.querySelector("#formInputVal_price").value;
+                formData["formInputVal_priceTotal"] = document.querySelector("#formInputVal_priceTotal").value;
+                
+                console.log(formData);
+                fetch("services/bookingGo", { 
+                    method: "POST",
+                     headers: {
+                      'Accept': 'application/json',
+                      'Content-type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                }).then(response => response.json())
+                    .then(data => {
+                        if (data.result) {
+                            // 成功的話 Cart_Id 就會在data裡面
+                            
+                            // 用 GET 的方法 丟到sean/addTicketToCart
+                            let uri = `sean/addTicketToCart?ticketCartId=${data.ticketCartId}`;
+                            fetch(uri)
+                                .then(response => response.text()) // 將 ResponseEntity 的 body 解析為 text
+                                .then(responseText => {
+                                    Swal.fire({
+                                        title: '( ｣｡╹o╹｡)｣您的訂票已加入購物車，即將導向購物車頁面',
+                                        icon: 'success',
+                                        confirmButtonText: 'Ok'
+                                    }).then((result) => { // 顯示 Swal.fire
+                                        if (result.isConfirmed) { // 如果使用者點選確認，則導向新的 URL
+                                            window.location.href = `sean/CartLoginStatus`;
+                                        }
+                                    })
+                                });
+                            
+                        } else {
+                            Swal.fire(
+                                "資料儲存失敗",
+                                data.msg,
+                                "error"
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        Swal.fire(
+                            "資料儲存失敗",
+                            "無法儲存數據，請重試。",
+                            "error"
+                        );
+                    });
+            } else {
+                return false;
+            }
+        });
+    });
+});
+
+	</script>
+</body>
+
+</html>

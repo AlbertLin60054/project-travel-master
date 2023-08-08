@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>搜 尋 全 部 按 鈕</title>
+<style>
+fieldset {
+	width: 500px;
+	border: 1px solid cornflowerblue;
+	border-radius: 15px;
+	margin: 10px;
+}
+
+legend {
+	color: rgb(11, 53, 240);
+	/* text-align: center; */
+	margin-left: 65px;
+}
+
+strong {
+	color: red;
+}
+
+.st1 {
+	width: 450px;
+	/* border-bottom: 3px dashed rgb(77, 77, 72); */
+	margin: 10px;
+	padding: 5px;
+}
+
+.sub {
+	display: flex;
+	width: 450px;
+	margin: 50px auto;
+	text-align: center;
+	justify-content: center;
+}
+
+.t1 {
+	width: 100px;
+	float: left;
+	text-align: right;
+}
+
+textarea {
+	resize: none;
+}
+
+.sub input[type="submit"] {
+	border: 0;
+	background-color: lightblue;
+	color: #fff;
+	border-radius: 10px;
+	cursor: pointer;
+	padding: 5px 10px;
+	font-size: 20px;
+}
+
+.sub input {
+	border: none;
+	background-color: lightblue;
+	color: #fff;
+	border-radius: 10px;
+	cursor: pointer;
+	padding: 5px 10px;
+	font-size: 20px;
+}
+
+.sub input:hover, .sub input:hover {
+	color: #003C9D;
+	background-color: #fff;
+	border: 2px #003C9D solid;
+}
+</style>
+</head>
+<body>
+	<form method="GET" th:action="@{/playone/all}">
+		<div class="sub">
+			<input type="submit" value="按下確認查詢">
+		</div>
+	</form>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+</html>

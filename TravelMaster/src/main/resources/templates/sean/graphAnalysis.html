@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Graph Analysis</title>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<!-- Including Chart.js library -->
+	<style>
+		.styled-table {
+			width: 100%;
+			height: 100%;
+			border-collapse: collapse;
+			text-align: center;
+			font-family: Arial, sans-serif;
+			box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+			border-radius: 10px;
+			overflow: hidden;
+		}
+
+		.styled-table thead tr {
+			background-color: #273053;
+			color: white;
+			border: 2px solid #ddd;
+			padding: 8px;
+		}
+
+		.styled-table thead tr th {
+			text-shadow: 1px 1px 1px #000;
+			font-size: 18px;
+			padding: 12px;
+		}
+
+		.styled-table tbody#chartDataRows {
+			border: 2px solid #ddd;
+			padding: 8px;
+		}
+
+		.styled-table tbody#chartDataRows tr {
+			background-color: white;
+			transition: background-color 0.3s;
+			border: 1px solid #ddd;
+		}
+
+		.styled-table tbody#chartDataRows tr td {
+			padding: 12px;
+			font-size: 16px;
+		}
+
+		.styled-table tbody#chartDataRows tr:hover {
+			background-color: #d4d4d4;
+		}
+
+		.download-button {
+			padding: 0.8px 12px;
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			border-radius: 4px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+			transition-duration: 0.4s;
+			cursor: pointer;
+		}
+
+		.download-button:hover {
+			background-color: #273053;
+		}
+	</style>
+</head>
+
+<body>
+	<div th:replace="~{layout/dashboardHeader}"></div>
+	<main>
+		<div class="container" style="margin-top: 50px; margin-left: 70px; display: flex;">
+			<div style="flex: calc(60% - 10px); height: 80vh;">
+				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+					<h2>行程銷量統計</h2>
+					<div>
+						<label for="sortSelect">排序：</label>
+						<select id="sortSelect" onchange="sortChart(this.value)">
+							<option value="">預設</option>
+							<option value="asc">低排名優先</option>
+							<option value="desc">高排名優先</option>
+						</select>
+						<select id="exportSelect">
+							<option value="">選擇輸出格式</option>
+							<option value="image">圖表</option>
+							<option value="csv">CSV報表</option>
+						</select>
+						<button class="download-button" onclick="exportData()"><i class="fa-solid fa-cloud-arrow-down"></i> 下載</button>
+					</div>
+				</div>
+				<canvas id="myChart" style="width: 100%; height: calc(90% - 40px);"></canvas>
+				<!-- Canvas for the Chart -->
+			</div>
+			<div style="flex: calc(50% - 10px); height: 75vh; margin-left:130px">
+				<table class="styled-table">
+					<thead>
+						<tr>
+							<th>行程排名</th>
+							<th>銷量</th>
+						</tr>
+					</thead>
+					<tbody id="chartDataRows">
+						<tr>
+							<td>#1</td>
+							<td>100</td>
+						</tr>
+						<tr>
+							<td>#2</td>
+							<td>90</td>
+						</tr>
+						<!-- 更多的行... -->
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</main>
+	<div th:replace="~{layout/dashboardFooter}"></div>
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+
+		// 從服務器獲取數據
+		var chartData = JSON.parse(/*[[${chartData}]]*/ 'null');
+		var labels = chartData.labels;
+		var values = chartData.values;
+
+		// 創建圖表
+		var ctx = document.getElementById('myChart').getContext('2d');
+		var myChart = new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: labels.map((_, index) => (index + 1).toString()), // 只顯示排名數字
+				datasets: [{
+					label: '下單數量',
+					data: values,
+					backgroundColor: 'rgba(75, 192, 192, 0.2)',
+					borderColor: 'rgba(75, 192, 192, 1)',
+					borderWidth: 1
+				}]
+			},
+			options: {
+				responsive: true,
+				scales: {
+					y: {
+						beginAtZero: true
+					}
+				},
+				plugins: {
+					tooltip: {
+						callbacks: {
+							title: function (context) {
+								// 在工具提示中顯示完整的行程名稱
+								return labels[context[0].dataIndex];
+							}
+						}
+					}
+				}
+			}
+		});
+
+
+		// 函數來對圖表數據進行排序
+		function sortChart(order) {
+			var sortedData = [...chartData.labels].map((label, index) => ({label: label, value: chartData.values[index]}));
+
+			if (order === 'asc') {
+				sortedData.sort((a, b) => a.value - b.value);
+			} else if (order === 'desc') {
+				sortedData.sort((a, b) => b.value - a.value);
+			}
+
+			labels = sortedData.map(data => data.label);
+			values = sortedData.map(data => data.value);
+
+			myChart.data.labels = labels.map((_, index) => (index + 1).toString()); // 更新標籤為排名數字
+			myChart.data.datasets[0].data = values;
+			myChart.update();
+
+			updateChartDataRows();
+		}
+
+
+		// 函數來更新圖表數據的表格行
+		function updateChartDataRows() {
+			var chartDataRows = document.getElementById('chartDataRows');
+			chartDataRows.innerHTML = '';
+
+			for (var i = 0; i < labels.length; i++) {
+				var row = document.createElement('tr');
+				var labelCell = document.createElement('td');
+				var valueCell = document.createElement('td');
+				labelCell.textContent = labels[i];
+				valueCell.textContent = values[i];
+				row.appendChild(labelCell);
+				row.appendChild(valueCell);
+				chartDataRows.appendChild(row);
+			}
+		}
+
+		// 初始渲染圖表數據行
+		updateChartDataRows();
+
+		/*]]>*/
+
+		// 輸出csv或圖表
+		var ctx = document.getElementById('myChart').getContext('2d');
+		var chart = new Chart(ctx, {
+			// 圖表配置
+		});
+
+		function exportData() {
+			var exportSelect = document.getElementById('exportSelect');
+			var selectedOption = exportSelect.options[exportSelect.selectedIndex].value;
+
+			if (selectedOption === 'image') {
+				var url = myChart.toBase64Image(); // use myChart instead of chart
+				var a = document.createElement('a');
+				a.href = url;
+				a.download = 'chart.png';
+				a.click();
+			} else if (selectedOption === 'csv') {
+				window.location.href = 'http://localhost:8080/TM/sean/exportCSV';
+			}
+		}
+
+	</script>
+</body>
+
+</html>

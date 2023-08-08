@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>TM Login</title>
+</head>
+<body>
+<div th:replace="~{layout/indexHeader}"></div>
+<main>
+		<section class="hero" id="section_1">
+			<div class="container">
+				<div class="row">
+					<div class="video-wrap">
+						<video autoplay="" loop="" muted="" class="custom-video" poster="">
+							<source th:src="@{/video/pagevideo.mp4}" type="video/mp4">
+							Your browser does not support the video tag.
+						</video>
+					</div>
+					<div class="col-lg-5 col-12 m-auto">
+						<div class="hero-text">
+							<div class="card-body p-5 text-center"
+								style="background-color: rgba(255, 255, 255, 0.9);">								
+								<!-- Login -->
+								<form action="checklogin.controller" method="post" th:if="${forgot != 'yes' && sendemail != 'yes' && reset!='ok'}">																		
+									<h3 class="mb-5">Sign in Now</h3>
+									<div class="form-outline mb-4">
+										<input type="text" id="memberacc"
+											class="form-control form-control-lg" name="memberacc"
+											placeholder="帳號" required /> <label class="form-label"
+											for="memberacc"></label>
+									</div>
+
+									<div class="form-outline mb-4">
+										<input type="password" id="memberpwd"
+											class="form-control form-control-lg" name="memberpwd"
+											placeholder="密碼" required /> <label class="form-label"
+											for="memberpwd"></label>
+									</div>
+									
+									<div class="form-outline mb-4" >
+									    <img id="captchaImage" th:src="@{/captcha}" alt="請輸入圖片驗證碼" style="width:30%;"/>
+									    <a type="button" href="#" style="width:10%;" onclick="changeCaptcha()" ><i class="fa-solid fa-arrows-rotate fa-lg" style="color: #739ade;"></i></a>
+									    <input type="text" class="form-control-lg" id="captcha" name="captcha" placeholder="驗證碼" required style="width:50%;"/>								    
+									    <label class="form-label"></label>
+									</div>
+																	
+									<div class="form-outline mb-4" th:if="${errorMessage}">									
+									    <p class="text-danger" th:text="${errorMessage}"></p>
+									</div>
+							
+									<div class="form-outline mb-4">
+										<button class="btn btn-primary btn-lg btn-block" type="submit">Login</button>
+									</div>
+								</form>
+								
+								<!-- forgot password send email -->
+								<form action="forgotpassword.controller" method="post" th:if="${forgot == 'yes'}">
+									<h3 class="mb-5" >Forgot Password</h3>
+									<div class="form-outline mb-4" th:if="${sendsuccess != 'ok'}" >
+										<input type="text" id="email" style="width:400px"
+											class="form-control form-control-lg" name="email"
+											placeholder="請輸入您的信箱" required /> <label class="form-label"
+											for="email"></label>
+									</div>
+									<div class="form-outline mb-4" th:if="${sendsuccess == 'ok'}">
+										<input type="text" id="email"
+											class="form-control form-control-lg" name="email" th:value="${currectemail}" disabled/> <label class="form-label"
+											for="email"></label>
+									</div>									
+									<div class="form-outline mb-4" th:if="${message}">									
+									    <p class="text-danger" th:text="${message}"></p>
+									</div>
+									
+									<div class="form-outline mb-4">
+										<button class="btn btn-primary btn-lg btn-block" type="submit">送出</button>
+									</div>
+								</form>
+								
+								<!-- reset password -->
+								<form action="resetpassword.controller" method="post" th:if="${reset == 'ok'}">
+									<h3 class="mb-5">Reset your Password</h3>
+									<div class="form-outline mb-4">
+										<input type="password" id="memberpwd"
+											class="form-control form-control-lg" name="memberpwd"
+											placeholder="新密碼" required /> <label class="form-label"
+											for="memberpwd"></label>
+									</div>
+									<div class="form-outline mb-4">
+										<input type="password" id="checkmemberpwd"
+											class="form-control form-control-lg" name="checkmemberpwd"
+											placeholder="確認密碼" required /> <label class="form-label"
+											for="checkmemberpwd"></label>
+									</div>								
+									<div class="form-outline mb-4" th:if="${message}">									
+									    <p class="text-danger" th:text="${message}"></p>
+									</div>
+									<div><input type="hidden" id="token" name="token" th:value="${token}"></div>
+									<div class="form-outline mb-4">
+										<button class="btn btn-primary btn-lg btn-block" type="submit">送出</button>
+									</div>
+								</form>
+								
+								<div class="form-check d-flex justify-content-center mb-4">
+								    <label class="form-check-label" for="form1Example3"></label>
+								    <div style="margin-left:-30px;">
+								        <a th:href="@{/forgotpassword.controller}" style="color: black">忘記密碼?&nbsp;&nbsp;&nbsp;</a>
+								    </div>
+								    <div>
+								        <a th:href="@{/registered.controller}" style="color: black">註冊會員</a>
+								    </div>
+								</div>
+									<hr class="my-4">
+
+									<button class="btn btn-lg btn-block btn-primary" id="google_login"
+										style="background-color: #dd4b39;" type="button">
+										<i class="fab fa-google me-2"></i> Sign in with google
+									</button>
+									
+								
+								<input id="registerSuccess" type="hidden" th:value="${registerSuccess}">
+								<div id="persoanl_info"></div>
+								<form th:action="@{/googleregistered.controller}" method="post" id="mygoogleForm">
+								  <!-- 隱藏的表單欄位 -->
+								  <input type="hidden" id=googlemail name="email" th:value="${''}">
+								  <input type="hidden" id="googlename" name="name" th:value="${''}">
+								  <input type="hidden" id="googlegender" name="gender" th:value="${''}">
+								  <button type="submit" style="display: none;"></button>
+								</form>
+								<form th:action="@{/googlechecklogin.controller}" method="post" id="loginGoogleForm">
+								  <!-- 隱藏的表單欄位 -->
+								  <input type="hidden" id=logingooglemail name="membermail" th:value="${''}">
+								  <button type="submit" style="display: none;"></button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+	<div style="float: right;">
+		<a href="/TM/fastlogin?n=0">管理員</a><span>&nbsp&nbsp</span><a href="/TM/fastlogin?n=1">一般使用者</a>
+	</div>
+<div th:replace="~{layout/indexFooter}"></div>
+
+
+<!-- JAVASCRIPT FILES -->
+	<script th:src="@{js/index/jquery.min.js}"></script>
+	<script th:src="@{js/index/bootstrap.min.js}"></script>
+	<script th:src="@{js/index/jquery.sticky.js}"></script>
+	<script th:src="@{js/index/custom.js}"></script>
+	<script th:src="@{https://kit.fontawesome.com/0a9f356c66.js}"
+		th:crossorigin="@{anonymous}"></script>
+   <script th:inline="javascript" th:if="${registerSuccess != null}">
+   	  var registerSuccessValue = document.getElementById("registerSuccess").value;
+   	  console.log(registerSuccess);
+      alert(registerSuccessValue);
+   </script>
+	<script th:inline="javascript">
+	var client_id = "767263207797-hu5ihl40qh8rvc59jttrb3jj0q33ar2l.apps.googleusercontent.com",
+		apiKey = "AIzaSyBD7iu2XKHftsuj8Tnm810LNAVjN9g1IGE",
+		scope = "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/user.gender.read https://www.googleapis.com/auth/user.birthday.read",
+		personFields = "names,emailAddresses,photos,genders,birthdays",
+		discovery_doc = "https://www.googleapis.com/discovery/v1/apis/people/v1/rest",
+		resourceName = "people/me",
+		$persoanl_info = $("#persoanl_info"),
+		tokenClient;
+		loadApi();
+
+	// 載入 google api
+	function loadApi() {
+		// 載入 gapi
+		$.getScript("https://apis.google.com/js/api.js", function() {
+			gapi.load("client", function() {
+				gapi.client.init({
+					apiKey: apiKey,
+					discoveryDocs: [discovery_doc],
+				});
+			});
+		});
+
+		// 載入 gsi
+		$.getScript("https://accounts.google.com/gsi/client", function() {
+			tokenClient = google.accounts.oauth2.initTokenClient({
+				client_id: client_id,
+				scope: scope,
+				callback: signIn_callback,
+				error_callback: error_callback
+			});
+		});
+
+		// 登入後 callback
+		function signIn_callback(res) {
+			// 登入失敗時
+			if (res.error !== undefined) {
+				console.log(res.error);
+				$persoanl_info.html(res.error);
+			}
+
+			// 登入成功後
+			if (res && res.access_token) {
+				// 顯示帳號資訊
+				listAccountInfo();
+			}
+		}
+
+		// 捕捉非 OAuth 錯誤 或是在傳回 OAuth 回應前遭到關閉
+		function error_callback(res) {
+			console.log(res);
+			$persoanl_info.html(res.message);
+		}
+
+		// 顯示帳號資訊
+		function listAccountInfo() {
+		    // 呼叫 people api 取得資料
+		    gapi.client.people.people.get({
+		        "resourceName": resourceName,
+		        "personFields": personFields,
+		    }).then(function(res) {
+		        console.log(res.result)
+		        // 顯示資料
+		        var result = res.result,
+		            errorMessage = "請重新登入!",
+		            html = "",
+		            id, name, imgUrl, email, gender;
+		
+		        // 沒有取得必要資料時
+		        if (!result.names || !result.emailAddresses) {
+		            alert(errorMessage);
+		            $persoanl_info.html(errorMessage);
+		            return;
+		        }
+		
+		        id = result.resourceName.split("/")[1];
+		        name = result.names[0].displayName;
+		        imgUrl = result.photos[0].url;
+		        email = result.emailAddresses[0].value;
+		        if (result.genders && result.genders.length > 0) {
+		            gender = result.genders[0].value;
+		            console.log("性別: " + gender);
+		            // 顯示性別資訊或執行其他相關邏輯
+		        } else {
+		        	gender="null";
+		            console.log("無法取得性別資訊");
+		        }
+		
+		        html += "ID： " + id + "<br/>";
+		        html += "暱稱： " + name + "<br/>";
+		        html += "頭像：<img style='width: 40px;' src='" + imgUrl + "'/><br/>";
+		        html += "Email：" + email + "<br/>";
+		        html += "性別：" + gender + "<br/>";
+		
+		        $persoanl_info.html(html);
+		        
+		     // 將資料送到後端控制器
+		        sendUserDataToController(name, imgUrl, gender, email);
+		    });
+		}
+	}
+
+	// 點擊登入按鈕
+	$("#google_login").click(function() {
+		// 進動畫
+		$persoanl_info.html("<img src='https://lh5.googleusercontent.com/-EyVZ0f8J0qQ/UCeEG7aa8nI/AAAAAAAADtY/9sXw53XkYXM/s512/indicator-light.gif' /> <span>請稍後...</span>");
+
+		if (gapi.client.getToken() === null) {
+			// 未登入則彈出登入視窗
+			tokenClient.requestAccessToken();
+		} else {
+			// 已登入則不彈出視窗
+			tokenClient.requestAccessToken({
+				prompt: ""
+			});
+		}
+	});
+	
+	function changeCaptcha() {
+        $.ajax({
+            url: "http://localhost:8080/TM/captcha",
+            type: "GET",
+            success: function (data) {
+                $("#captchaImage").attr("src", "/TM/captcha?" + Date.now());
+            },
+            error: function (error) {
+                console.error(error);
+            }
+        });
+    }
+	
+	function sendUserDataToController(name, imgUrl, gender, email) {
+	    $.ajax({
+	        url: "/TM/checkgoogleregistered.controller",
+	        type: "GET",
+	        data: {
+	            email: email
+	        },
+	        success: function(response) {
+	        	 if (response === 'exists') {
+	        		 $('#logingooglemail').val(email);
+	        		 $('#loginGoogleForm').trigger('submit');
+	 		      } else {
+	 		    	$('#googlemail').val(email);
+	 		    	$('#googlegender').val(gender);
+	 		    	$('#googlename').val(name);		    	
+	 		    	$('#mygoogleForm').trigger('submit');
+	 		      }
+	            
+	        },
+	        error: function(error) {
+	            console.log(error);
+	            // 處理錯誤情況
+	        }
+	    });
+	}
+	
+	$("#captchaImage").click(function(){
+		$.ajax({
+			url: "http://localhost:8080/TM/checkcaptcha",
+			type: "get",
+			success: function(response){
+				$("#captcha").val(response);
+			}
+		})
+	})
+	
+	</script>
+	
+</body>
+</html>

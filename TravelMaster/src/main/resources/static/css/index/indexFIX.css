@@ -1,0 +1,10 @@
+@charset "utf-8";
+
+.navbar-nav{
+    align-items: center;
+}
+
+li {
+	padding: 4.5px 0;
+}
+

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>景點管理</title>
+
+<style type="text/css">
+.article {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.aside {
+	width: 600px;
+	border: 2px solid rgb(203, 203, 203);
+	border-radius: 15px;
+	background-color: rgb(247, 247, 247);
+}
+
+.section {
+	padding: 50px 50px 5px 50px;
+	line-height: 2em;
+}
+
+label {
+	display: inline-block;
+	width: 80px;
+	text-align: left;
+}
+</style>
+</head>
+<body>
+	<div th:replace="~{layout/dashboardHeader}"></div>
+	<main>
+		<div class="container-fluid px-4">
+			<br>
+			<div class="card mb-4">
+				<div class="card-header">
+					<i class="fas fa-table me-1"></i>增修景點
+				</div>
+				<div class="card-body">
+					<div class="inline-input-group row">
+						<div class="col-input col">
+							<div align="center">
+								<form class="row g-25" method="post"
+									th:action="@{/spotList/doAction}">
+									<article class="article">
+										<div class="aside">
+											<div class="section">
+												<div class="container px-4">
+													<div class="row gx-3">
+														<div class="input-group">
+															<input type="hidden" name="spotNo"
+																th:value="${spots?.spotNo}" />
+
+															<div class="input-group mb-3 p-2">
+																<label class="input-group-text" id="spotName">名稱</label>
+																<input class="form-control" type="text"
+																	th:value="${spots?.spotName}" name="spotName">
+															</div>
+															<div class="input-group mb-3 p-2">
+																<label class="input-group-text" for="cityRegion"
+																	th:field="*{cityRegion}">地區</label> <select
+																	class="form-select" id="cityRegion" name="cityRegion">
+																	<option disabled selected>選擇地區</option>
+																	<option th:each="cityRegion : ${cityRegions}"
+																		th:value="${cityRegion}" th:text="${cityRegion}"></option>
+																</select>
+															</div>
+															<div class="input-group mb-3 p-2">
+																<label class="input-group-text" for="cityName">縣市</label>
+																<select class="form-select" id="cityName"
+																	name="cityName">
+																	<option disabled selected>選擇縣市</option>
+																	<option th:each="cityName : ${cityNames}"
+																		th:value="${cityName}" th:text="${cityName}"></option>
+																</select>
+															</div>
+															<div class="input-group mb-3 p-2">
+																<label class="input-group-text" for="spotType">類型</label>
+																<select class="form-select" id="spotType" name="spotType">
+																	<option disabled selected>選擇類型</option>
+																	<option th:each="spotType : ${spotTypes}"
+																		th:value="${spotType}" th:text="${spotType}"></option>
+																</select>
+															</div>
+															<div class="input-group mb-3 p-2">
+																<label class="input-group-text" id="spotInfo">說明</label>
+																<textarea class="form-control"
+																	th:value="${spots?.spotInfo}" name="spotInfo"
+																	style="height: 100px; resize: none;"></textarea>
+															</div>
+															<div class="input-group mb-3 p-2">
+																<input class="form-control" type="file" id="formFile"
+																	th:value="${spots?.spotPic}" name="spotPic">
+															</div>
+															
+															<input type="hidden" name="longitude"
+																th:value="${spots?.longitude}" />
+																<input type="hidden" name="latitude"
+																th:value="${spots?.latitude}" />
+														</div>
+
+													</div>
+													<div style="margin: 10px">
+														<button style="margin: 0px 30px 0px 0px;"
+															class="btn btn-secondary" type="submit" id="submitBtn"
+															th:text="${spots == null ? '新增' : '修改'}"></button>
+														<button style="margin: 0px 0px 0px 30px;"
+															class="btn btn-secondary" type="reset"
+															th:onclick="history.back()">取消</button>
+														<button style="margin: 0px 0px 0px 60px;"
+															class="btn btn-secondary" type="button"
+															onclick="fillData()">快速填入</button>
+													</div>
+													<input type="hidden" name="action"
+														th:value="${spots == null ? 'doInsert' : 'doUpdate'}">
+												</div>
+											</div>
+										</div>
+									</article>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+	<div th:replace="~{layout/dashboardFooter}"></div>
+</body>
+<script th:inline="javascript">
+
+  function fillData() {
+    var spotNameInput = document.querySelector('input[name="spotName"]');
+    var cityRegionSelect = document.querySelector('select[name="cityRegion"]');
+    var cityNameSelect = document.querySelector('select[name="cityName"]');
+    var spotTypeSelect = document.querySelector('select[name="spotType"]');
+    var spotInfoTextarea = document.querySelector('textarea[name="spotInfo"]');
+    var spotlongitude = document.querySelector('input[name="longitude"]');
+    var spotlatitude = document.querySelector('input[name="latitude"]');
+
+    spotNameInput.value = "埔心牧場";
+    cityRegionSelect.value = "北部";
+    cityNameSelect.value = "桃園市";
+    spotTypeSelect.value = "室外";
+    spotInfoTextarea.value = "埔心牧場除從事乳牛專業飼養外，並致力花卉栽培，各式奇花異草呈現一片花團錦簇，露天販賣店設置花木間，別有一番風情，牧場內新設的體能訓練場，20幾項野外健身活動設施，項項精彩刺激。露營、烤肉區，場地寬闊，水電設施供應十分完備。 純青湖區湖邊綠草如茵，湖內魚兒成群，周圍景致充滿詩情畫意。此外，尚有休閒遊樂系列，如射箭場、迷你馬場、協力車、環場馬車、游泳池等，是一處觀光休憩的最佳去處。";
+    spotlongitude.value = "121.17637";
+    spotlatitude.value = "24.925942";
+}
+</script>
+
+</html>

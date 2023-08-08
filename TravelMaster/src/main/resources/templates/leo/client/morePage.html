@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>和 你 一 起 旅 行</title>
+<link rel="stylesheet"
+	href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<link
+	href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css"
+	rel="stylesheet" />
+<link
+	href="https://cdn.datatables.net/v/dt/dt-1.13.4/datatables.min.css"
+	rel="stylesheet" />
+<link rel="stylesheet" type="text/css"
+	href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+<link rel="stylesheet" type="text/css"
+	href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+<style>
+.bd-placeholder-img {
+	font-size: 1.125rem;
+	text-anchor: middle;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+}
+
+@media ( min-width : 768px) {
+	.bd-placeholder-img-lg {
+		font-size: 3.5rem;
+	}
+}
+
+.b-example-divider {
+	height: 3rem;
+	background-color: rgba(0, 0, 0, .1);
+	border: solid rgba(0, 0, 0, .15);
+	border-width: 1px 0;
+	box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em
+		rgba(0, 0, 0, .15);
+}
+
+.b-example-vr {
+	flex-shrink: 0;
+	width: 1.5rem;
+	height: 100vh;
+}
+
+.bi {
+	vertical-align: -.125em;
+	fill: currentColor;
+}
+
+.nav-scroller {
+	position: relative;
+	z-index: 2;
+	height: 2.75rem;
+	overflow-y: hidden;
+}
+
+.nav-scroller .nav {
+	display: flex;
+	flex-wrap: nowrap;
+	padding-bottom: 1rem;
+	margin-top: -1px;
+	overflow-x: auto;
+	text-align: center;
+	white-space: nowrap;
+	-webkit-overflow-scrolling: touch;
+}
+
+.video-wrap {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 45vh;
+	z-index: -1;
+}
+
+.custom-video {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.leoimg {
+	width: 100px;
+	height: 300px;
+	object-fit: cover;
+	border-radius: 15px;
+}
+
+.carousel-inner:hover .leoimg {
+	transform: scale(1.3);
+	border-radius: 10px;
+	transition: transform 1s ease;
+}
+
+#leoTopBtn {
+	display: none;
+	position: fixed; /* 使用固定位置 */
+	bottom: 20px;
+	right: 30px;
+	z-index: 99; /* 確保不會被其他元素覆蓋 */
+	border: none;
+	outline: none;
+	background-color: lightblue;
+	color: white;
+	cursor: pointer;
+	padding: 18px;
+	border-radius: 100px;
+	font-size: 20px;
+}
+
+#leoTopBtn:hover {
+	background-color: #555;
+}
+</style>
+</head>
+<body>
+	<div th:replace="~{leo/client/indexNavbar}"></div>
+	<main>
+		<div class="video-wrap">
+			<video autoplay="" loop="" muted="" class="custom-video" poster="">
+				<source th:src="@{/video/pagevideo.mp4}" type="video/mp4">
+			</video>
+		</div>
+		<br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br />
+		<br /> <br /> <br /> <br />
+		<div class="album py-5 bg-light">
+			<div class="container">
+				<div style="display: flex; justify-content: flex-end;">
+					<button class="btn btn-outline-secondary leoAllPageBtn"
+						style="display: none; margin: 10px;">全部旅伴</button>
+					<button class="btn btn-outline-info leoBoyPageBtn"
+						style="margin: 10px;">只看男生</button>
+					<button class="btn btn-outline-danger leoGirlPageBtn"
+						style="margin: 10px;">只看女生</button>
+					<nav class="navbar bg-light" style="margin-left: 50px">
+						<div class="container-fluid">
+							<form method="get" th:action="@{/playone/byNick}" id="subNick"
+								role="search" class="d-flex">
+								<input class="form-control me-2" type="search"
+									placeholder="請輸入暱稱" aria-label="Search" name="nick">
+								<button class="btn btn-outline-success" type="submit">Search</button>
+							</form>
+						</div>
+					</nav>
+				</div>
+				<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+					<th:block th:each="playone:${page.content}">
+						<div class="col" style="width: 25%">
+							<div class="card shadow-sm " style="border-radius: 20px;">
+								<div th:id="'carouselExampleIndicators'+${playone.PlayoneId}"
+									class="carousel slide photo-div">
+									<div class="carousel-inner" style="border-radius: 15px;">
+										<th:block th:each="img, stat : ${playone.playoneImgs}">
+											<div class="carousel-item"
+												th:class="${stat.first} ? 'carousel-item active' : 'carousel-item'">
+												<a th:href="@{/playone/byId(id=${playone.PlayoneId})}"
+													th:data-playone-id="${playone.PlayoneId}"><img
+													th:src="'data:image/jpeg;base64,' + ${img.base64Photo}"
+													class="d-block w-100 img leoimg" alt="Playone photo"></a>
+											</div>
+										</th:block>
+									</div>
+								</div>
+								<div class="card-body">
+									<div class="nic" id="nic" name="nic"
+										th:text="${playone.playoneNick}"
+										style="width: 100%; display: block; color: #0e548f; font-size: 30px; font-weight: bold; display: flex; justify-content: center; align-items: center;"></div>
+									<div class="age" id="age" name="age"
+										th:text="'🎂 '+${playone.age}+' 歲'"
+										style="width: 100%; display: flex; justify-content: center; align-items: center; font-weight: bold;"></div>
+									<div class="zodiac" id="zodiac" name="zodiac"
+										th:text="${playone.Zodiac}"
+										style="width: 100%; display: flex; justify-content: center; align-items: center; font-weight: bold;"></div>
+									<div class="ins" id="ins" name="ins"
+										th:text="${playone.playoneInterest}"
+										style="display: flex; justify-content: center; align-items: center; width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 100%; color: #dd820c; font-size: 20px; font-weight: bold;"></div>
+								</div>
+							</div>
+						</div>
+				</div>
+				</th:block>
+				<button onclick="topFunction()" id="leoTopBtn" title="Go to top">
+					<i class="fa-solid fa-chevron-up"></i>
+				</button>
+				<div class="leomoreFragment"></div>
+				<div class="spinner-border text-info" role="status"
+					style="display: none; width: 3rem; height: 3rem; margin-left: 48.5%; margin-top: 5%">
+					<span class="visually-hidden">Loading...</span>
+				</div>
+			</div>
+		</div>
+	</main>
+	<div th:replace="~{leo/client/indexFooter}"></div>
+	<script>
+		var currentPage = 1;
+		var isTriggered = false;
+		
+		
+		    function trackVisitedPlayones() {
+			    document.querySelectorAll('a[data-playone-id]').forEach(function(link) {
+			        link.addEventListener('click', function(event) {
+			            var playoneId = event.currentTarget.getAttribute('data-playone-id');
+			            console.log('Current playoneId: ', playoneId); 
+			            var visitedPlayones = JSON.parse(sessionStorage.getItem('visitedPlayones')) || [];
+			            if (!visitedPlayones.includes(playoneId)) {
+			              visitedPlayones.unshift(playoneId);
+			              if (visitedPlayones.length > 4) {
+			                visitedPlayones.pop();
+			              }
+			              sessionStorage.setItem('visitedPlayones', JSON.stringify(visitedPlayones));
+			            }
+			            console.log('Visited playones: ', visitedPlayones); 
+			        });
+			    });
+			}
+			
+			trackVisitedPlayones();
+
+		
+
+		
+		
+		function scrollListener() {
+		    $(window).scroll(function() {
+		        if ($(window).scrollTop() + $(window).height() >= $(document).height() - 200) {
+		            if (!isTriggered && $('.leoLastPage').length === 0) {
+		                isTriggered = true;
+		                console.log('loadMoreData called, currentPage = ' + currentPage);
+		                // 設置一個定時器，1秒後將觸發狀態重置為 false
+		                setTimeout(function() {
+		                    isTriggered = false;
+		                }, 1000);
+		                currentPage++;
+		
+		                if ($('.boyShow').length > 0) {
+		                    loadMoreBoyData(currentPage);
+		                } else if ($('.girlShow').length > 0) {
+		                    loadMoreGirlData(currentPage);
+		                } else {
+		                    loadMoreData(currentPage);
+		                }
+		            }
+		        }
+		    });
+		}
+
+
+		
+		function loadMoreBoyData(page) {
+		  console.log("loadMoreGirlData called, page = " + page);
+		  $(".spinner-border").show();
+		  $.get("/TM/playone/bySex", { 'sex': '男', 'p': page })
+		      .done(function(data) {
+		      setTimeout(function() {
+		      	var $data = $(data);
+		      	$data.hide();
+		        $(".leomoreFragment").append($data);
+		        $data.fadeIn('100');
+		        $(".spinner-border").hide();
+		
+		        if ($('.leoLastPage').length > 0) {
+		          $(window).off("scroll");
+		          $(".spinner-border").hide();
+		        } 
+		        trackVisitedPlayones();
+		      }, 800);
+		    })
+		    .fail(function() {
+		      console.log("Error loading more data");
+		      $(".visually-hidden").hide();
+		    });
+		}
+
+		function loadMoreGirlData(page) {
+		  $(".spinner-border").show();
+		  $.get("/TM/playone/bySex", { 'sex': '女', 'p': page })
+		    .done(function(data) {
+		      setTimeout(function() {
+		      	var $data = $(data);
+		      	$data.hide();
+		        $(".leomoreFragment").append($data);
+		        $data.fadeIn('100');
+		        $(".spinner-border").hide();
+		
+		        if ($('.leoLastPage').length > 0) {
+		          $(window).off("scroll");
+		          $(".spinner-border").hide();
+		        } 
+		        trackVisitedPlayones();
+		      }, 800);
+		    })
+		    .fail(function() {
+		      console.log("Error loading more data");
+		      $(".visually-hidden").hide();
+		    });
+		}
+
+		function loadMoreData(page) {
+		    $(".spinner-border").show();
+		    $.get("/TM/playone/moreFragment", { p: page })
+		        .done(function(data) {
+		            setTimeout(function() {
+		                var $data = $(data);
+		                $data.hide();
+		                $(".leomoreFragment").append($data);
+		                $data.fadeIn('100');
+		                $(".spinner-border").hide();
+		
+		                if ($('.leoLastPage').length > 0) {
+		                    $(window).off("scroll");
+		                    $(".spinner-border").hide();
+		                } 
+		                trackVisitedPlayones();
+		            }, 800);
+		        })
+		        .fail(function() {
+		            console.log("Error loading more data");
+		            $(".visually-hidden").hide();
+		        });
+		}
+
+
+		$(document).ready(function(){
+		scrollListener();
+		    $('#subNick').submit(function(event){
+		        event.preventDefault();
+		        currentPage = 1;
+		        $('.boyShow').remove();
+		   		$('.girlShow').remove();
+		   		$('.leoLastPage').remove();
+		        let nickName = $(this).find('input[name="nick"]').val();
+		        if (!nickName.trim()) {
+		            alert("請輸入暱稱！");
+		            return;
+		        }
+		        $.ajax({
+		            url: '/TM/playone/byNick',
+		            data: {
+		                nick: nickName
+		            },
+		            success: function(data) {
+		                // 清空原有内容
+		                $('.row-cols-1.row-cols-sm-2.row-cols-md-3.g-3').empty();
+		                $('.leomoreFragment').empty();
+		                $('.leoAllPageBtn').show();
+		                $('.leoBoyPageBtn').prop('disabled', false);
+		                $('.leoGirlPageBtn').prop('disabled', false);
+		                // 插入新的内容
+		                
+		                $('.row-cols-1.row-cols-sm-2.row-cols-md-3.g-3').html(data);
+		                trackVisitedPlayones();
+		            }
+		        });
+		    });
+		    
+		   $('.leoAllPageBtn').click(function() {
+				   $.ajax({
+			    url: '/TM/playone/moreFragment',  
+			    type: 'get',  
+			    data: {  
+			      p: 1
+			    },
+			    success: function(data) {
+			       // 清空原有内容
+			      		currentPage = 1;
+			        	$(window).off("scroll");
+    					scrollListener();
+		                $('.row-cols-1.row-cols-sm-2.row-cols-md-3.g-3').empty();
+		                $('.leomoreFragment').empty();
+		                $('.leoAllPageBtn').show();
+    					$('.boyShow').remove();
+		   		        $('.girlShow').remove();
+		                $('.leoLastPage').remove();
+		                $('.leoAllPageBtn').hide();
+		                $('.leoBoyPageBtn').prop('disabled', false);
+		                $('.leoGirlPageBtn').prop('disabled', false);
+		                // 插入新的内容
+		                $(".leomoreFragment").append(data);
+		                trackVisitedPlayones();
+			    }
+			    
+			  });
+				});
+
+			$('.leoBoyPageBtn').click(function() {
+			  $.ajax({
+			    url: '/TM/playone/bySex',  
+			    type: 'get',  
+			    data: {  
+			      sex: '男'
+			    },
+			    success: function(data) {
+			       // 清空原有内容
+			      		currentPage = 1;
+			        	$(window).off("scroll");
+    					scrollListener();
+		                $('.row-cols-1.row-cols-sm-2.row-cols-md-3.g-3').empty();
+		                $('.leomoreFragment').empty();
+		                $('.leoAllPageBtn').show();
+		                $('.girlShow').remove();
+		                $('.leoLastPage').remove();
+		                $('.leoAllPageBtn').prop('disabled', false);
+		                $('.leoBoyPageBtn').prop('disabled', true);
+		                $('.leoGirlPageBtn').prop('disabled', false);
+		                // 插入新的内容
+		                $(".leomoreFragment").append(data);
+		                $('.leomoreFragment').append('<div class="boyShow" style="display: none;"></div>');
+		                trackVisitedPlayones();
+			    }
+			    
+			  });
+			});
+			$('.leoGirlPageBtn').click(function() {
+			  $.ajax({
+			    url: '/TM/playone/bySex',  
+			    type: 'get',  
+			    data: {  
+			      sex: '女'
+			    },
+			    success: function(data) {
+			       // 清空原有内容
+			       		currentPage = 1;
+			        	$(window).off("scroll");
+    					scrollListener();
+		                $('.row-cols-1.row-cols-sm-2.row-cols-md-3.g-3').empty();
+		                $('.leomoreFragment').empty();
+		                $('.leoAllPageBtn').show();
+		                $('.boyShow').remove();
+		                $('.leoLastPage').remove();
+		                $('.leoAllPageBtn').prop('disabled', false);
+		                $('.leoBoyPageBtn').prop('disabled', false);
+		                $('.leoGirlPageBtn').prop('disabled', true);
+		                // 插入新的内容
+		                $(".leomoreFragment").append(data);
+		                $('.leomoreFragment').append('<div class="girlShow" style="display: none;"></div>');
+		                trackVisitedPlayones();
+			    }
+			    
+			  });
+			});
+
+
+
+		});
+
+
+		window.onscroll = function() {scrollFunction()};
+		
+		function scrollFunction() {
+		    if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
+		        document.getElementById("leoTopBtn").style.display = "block";
+		    } else {
+		        document.getElementById("leoTopBtn").style.display = "none";
+		    }
+		}
+		
+		function topFunction() {
+		    document.body.scrollTop = 0;
+		    document.documentElement.scrollTop = 0;
+		}
+
+
+	</script>
+</body>
+</html>

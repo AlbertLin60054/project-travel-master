@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="description" content="" />
+<meta name="author" content="" />
+<title>Travel Master| MyArticles</title>
+
+<!--  jquery-3.6.4 -->
+<script src="https://code.jquery.com/jquery-3.6.4.js"></script>
+<!--  sweetalert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!--  fontawesome -->
+<script src="https://kit.fontawesome.com/0a9f356c66.js"
+	th:crossorigin="anonymous"></script>
+<!--  bootstrap@5.3.0 -->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+	rel="stylesheet"
+	integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
+	crossorigin="anonymous">
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+	integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+	crossorigin="anonymous"></script>
+<!--  Project bootstrap dashboard-->
+<link th:href="@{/css/dashboard/styles.css}" rel="stylesheet" />
+<script th:src="@{/js/dashboard/scripts.js}"></script>
+<script th:src="@{/js/dashboard/datatables-simple-demo.js}"></script>
+<!--  datatables  -->
+<link
+	href="https://cdn.datatables.net/v/dt/dt-1.13.4/datatables.min.css"
+	rel="stylesheet" />
+<script
+	src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script
+	src="https://cdn.datatables.net/v/dt/dt-1.13.4/datatables.min.js"></script>
+
+<link
+	href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css"
+	rel="stylesheet" />
+<script
+	src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
+	th:crossorigin="anonymous"></script>
+<script th:src="@{/js/index/index.js}"></script>
+<link th:href="@{/css/index/openModel.css}" rel="stylesheet">
+<style>
+:root {
+	--font-weight-bold: 700;
+}
+
+a.articleTypeLink {
+	color: rgb(10, 146, 243);
+	text-decoration: none;
+}
+
+a.articleTypeLink:hover {
+	color: rgb(0, 16, 239);
+}
+</style>
+
+</head>
+<nav class="sb-topnav navbar navbar-expand"
+	style="background-color: #273053">
+	<!-- Navbar Brand-->
+	<a class="navbar-brand ps-3" th:href="@{/layout/index}"
+		style="background-color: #273053"> <i
+		class="fa-solid fa-martini-glass-citrus"
+		style="background-color: #273053"></i> <span class="brand-text"
+		style="font-weight: var(--font-weight-bold)">TM</span></a>
+	<!-- Sidebar Toggle-->
+	<button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0"
+		id="sidebarToggle" href="#!">
+		<i class="fas fa-bars"></i>
+	</button>
+	<!-- Navbar Search-->
+	<form
+		class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+
+	</form>
+	<!-- Navbar-->
+	<ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+		<li class="nav-item dropdown"><a class="nav-link dropdown-toggle"
+			id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
+			aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+			<div class="dropdown">
+				<ul class="dropdown-menu dropdown-menu-end"
+					aria-labelledby="navbarDropdown">
+					<li><a class="dropdown-item" th:href="@{/logout.controller}">登出</a></li>
+				</ul>
+			</div></li>
+	</ul>
+	<div id="myModal" class="modal" th:if="${session.mbsession != null}">
+		<div class="chih">
+			<div class="header">
+				<div class="title-container">
+					<span class="title">個人資料</span>
+				</div>
+				<span class="close" onclick="closeModal()">&times;</span>
+			</div>
+			<div class="mb-3">
+				<label class="form-label">照片</label>
+				<div class="photo-preview">
+					<img id="current-photo"
+						th:src="@{'http://localhost:8080/TM/getpersonphoto.controller?memberNum=' + ${session.mbsession.memberNum}}"
+						alt="Current Photo">
+				</div>
+				<input type="file" class="form-control" id="memberphoto"
+					name="memberphoto" accept="image/gif, image/jpeg, image/png">
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label">會員編號</label> <input type="text"
+					class="form-control" id="membernum" name="membernum" disabled
+					th:value="${session.mbsession.memberNum}">
+			</div>
+			<div class="mb-3">
+				<label for="membername" class="form-label">姓名</label> <input
+					type="text" class="form-control" id="membername" disabled
+					th:value="${session.mbsession.memberName}">
+			</div>
+			<div class="mb-3">
+				<label class="form-label">性別</label> <input type="text"
+					class="form-control" id="membersex" disabled
+					th:value="${session.mbsession.memberSex}">
+			</div>
+			<div class="mb-3">
+				<label for="membername" class="form-label">信箱</label> <input
+					type="email" class="form-control" id="membermail" name="membermail"
+					disabled th:value="${session.mbsession.memberMail}">
+			</div>
+			<div class="mb-3">
+				<label for="membername" class="form-label">電話</label> <input
+					type="tel" class="form-control" id="memberphone" name="memberphone"
+					disabled th:value="${session.mbsession.memberPhone}">
+			</div>
+			<div class="mb-3">
+				<label for="membername" class="form-label">地址</label> <input
+					type="text" class="form-control" id="memberadd" name="memberadd"
+					disabled th:value="${session.mbsession.memberAdd}">
+			</div>
+			<div class="mb-3">
+				<label class="form-label">身分證</label> <input type="text"
+					class="form-control" disabled
+					th:value="${session.mbsession.memberId}">
+			</div>
+			<div class="mb-3">
+				<label class="form-label">帳號</label> <input type="text"
+					class="form-control" disabled
+					th:value="${session.mbsession.memberAcc}">
+			</div>
+			<div class="mb-3">
+				<label for="memberpwd" class="form-label">密碼</label> <input
+					type="password" class="form-control" id="memberpwd"
+					name="memberpwd" disabled th:value="${session.mbsession.memberPwd}">
+			</div>
+			<form th:action="@{/updatepersonalmember.controller}" th:method="PUT">
+				<div
+					style="display: flex; justify-content: center; align-items: center;">
+					<input type="button" class="updateBtn btn btn-secondary"
+						id="updateBtn" value="修改">
+				</div>
+				<input type="hidden" id="check" name="check" value=""> <input
+					type="hidden" id="photo1" name="memberphoto" th:value="${''}">
+				<input type="hidden" id="num1" name="membernum" th:value="${''}">
+				<input type="hidden" id="name1" name="membername" th:value="${''}">
+				<input type="hidden" id="email1" name="membermail" th:value="${''}">
+				<input type="hidden" id="phone1" name="memberphone" th:value="${''}">
+				<input type="hidden" id="address1" name="memberadd" th:value="${''}">
+				<input type="hidden" id="password1" name="memberpwd"
+					th:value="${''}">
+				<div
+					style="display: flex; justify-content: center; align-items: center;">
+					<input type="submit" class="saveBtn btn btn-danger" id="saveBtn"
+						value="確認" style="display: none;">
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<div id="layoutSidenav">
+	<div id="layoutSidenav_nav">
+		<nav class="sb-sidenav accordion sb-sidenav-dark"
+			id="sidenavAccordion">
+			<div class="sb-sidenav-menu" style="background-color: #273053">
+				<div class="nav">
+					<a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+						data-bs-target="#collapseLayouts" aria-expanded="false"
+						aria-controls="collapseLayouts"> <i
+						class="fa-regular fa-user p-2"></i> 使用者 <span
+						class="sb-sidenav-collapse-arrow"> <i
+							class="fas fa-angle-down"></i>
+					</span>
+					</a>
+					<div class="collapse" id="collapseLayouts"
+						aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+						<nav class="sb-sidenav-menu-nested nav">
+							<a class="nav-link"><button class="dropdown-item"
+									onclick="showForm()">個人資料</button></a>
+						</nav>
+					</div>
+					<div class="sb-nav-link-icon">
+						<a class="nav-link" th:href="@{/sean/getPersonalOrder}"> <i
+							class="fa-solid fa-cart-shopping p-2"></i> 訂單查詢
+						</a>
+					</div>
+
+
+					<a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+						data-bs-target="#articleMange"> <i
+						class="fa-regular fa-newspaper"></i> 文章管理 <span
+						class="sb-sidenav-collapse-arrow"> <i
+							class="fas fa-angle-down"></i></span></a>
+					<div class="collapse" id="articleMange"
+						data-bs-parent="#sidenavAccordion">
+						<nav class="sb-sidenav-menu-nested nav">
+							<a class="nav-link" th:href="@{/forum/memberCenter/articleMange}">我的文章</a>
+							<a class="nav-link" th:href="@{/forum/memberCenter/collection}">收藏文章</a>
+							<a class="nav-link" th:href="@{/forum/insertArticle}">撰寫文章</a>
+						</nav>
+					</div>
+
+
+
+					<div class="sb-nav-link-icon">
+						<a class="nav-link" th:href="@{/likedSpot}"> <i
+							class="fa-solid fa-location-dot p-2 "> </i> 已儲存景點
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="sb-sidenav-footer" style="background-color: #273053">
+				<div class="small">Version : 1.0.0</div>
+			</div>
+		</nav>
+	</div>
+	<div id="layoutSidenav_content">
+		<main>
+			<input type="hidden" class="memberNum"
+				th:value="${member?.memberNum}">
+			<!-- 取的會員編號 -->
+			<div class="container-fluid px-4">
+				<h1 class="mt-4">我的文章</h1>
+				<hr>
+			</div>
+			<div class="container p-3 d-grid gap-4 rounded border-0">
+				<div class="row">
+					<th:block th:each="article : ${page.content}">
+						<div class="list-group p-1" style="cursor: pointer;">
+							<div
+								class="list-group-item list-group-item-action position-relative">
+								<div class="container-fluid d-flex flex-row mb-2 p-0">
+									<i class="fa-solid fa-user"></i> &nbsp
+									<div class="co1" th:text=${article.member.memberName}></div>
+									&nbsp &nbsp <i class="fa-solid fa-calendar-days"></i>&nbsp
+									<div class="col me-auto" th:text=${''+article.articleDate}></div>
+
+									<div class="btn-group">
+										<button type="button" class="btn btn-light dropdown-toggle"
+											data-bs-toggle="dropdown"></button>
+										<ul class="dropdown-menu">
+											<li>
+												<form method="get" th:action="@{/forum/intoEdit}">
+													<input type="hidden" name="articleId"
+														th:value="${article.articleId}"> <input
+														type="hidden" name="memberNum"
+														th:value="${article.member.memberNum}">
+													<button class="dropdown-item" type="submit">編輯文章</button>
+												</form>
+											</li>
+											<li>
+												<button class="delete-article-btn dropdown-item "
+													type="button" th:data-articleId="${article.articleId}">刪除文章</button>
+											</li>
+										</ul>
+									</div>
+								</div>
+
+								<div class="postArea d-flex" data-bs-toggle="modal"
+									th:data-bs-target="'#modalId'+${article.articleId}"
+									th:data-post-id="${article.articleId}">
+
+									<div class="me-auto mb-auto">
+										<h5 th:text=${article.articleName}></h5>
+										<p th:text="${article.articleSubtitle}"></p>
+									</div>
+									<img class="rounded m-1 end-0"
+										style="width: 100px; height: 100px;" alt="..."
+										th:src="@{'/forum/getImage/'+${article.articleId}}" />
+								</div>
+								<div th:id="${'infoBar'+article.articleId}"
+									class="d-flex flex-row">
+									<i class="fa-solid fa-heart"></i>&nbsp
+									<div class="post-like" th:text=${article.articleLikeCount}>
+									</div>
+									&nbsp&nbsp&nbsp&nbsp<i class="fa-solid fa-comment"></i>&nbsp
+									<div class="commentNum"
+										th:text=${#lists.size(article.comments)}></div>
+									&nbsp&nbsp&nbsp<i class="fa-solid fa-eye"></i>&nbsp
+									<div class="viewCount" th:text=${article.articleViewCount}></div>
+								</div>
+							</div>
+						</div>
+					</th:block>
+				</div>
+			</div>
+
+			<!-- 文章彈出窗 -->
+			<th:block th:each="article : ${page.content}">
+				<div class=" modal fade" th:id="'modalId'+${article.articleId}"
+					tabindex="-1" style="z-index: 2000;">
+					<div
+						class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+						<div class="modal-content">
+							<div class=" modal-header">
+								<i class="fa-solid fa-user"></i>&nbsp<span
+									class="modal-title fs-5" th:text=${article.member.memberName}></span>
+								<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+							</div>
+							<div class="modal-body">
+								<div>
+									<h3 th:text=${article.articleName}></h3>
+								</div>
+
+								<span><a class="articleTypeLink" href="#"
+									th:text=${article.articleType}></a>・</span><span th:text=${'發布時間:'+article.articleDate}></span>
+
+
+
+								<p th:utext="${article.articleContent}"></p>
+
+								<div class="likeArea">
+									&nbsp <span class="likeCountArea"
+										th:text="${article.articleLikeCount}"></span>
+								</div>
+								<div class="commentArea"></div>
+							</div>
+							<div class="modal-footer p-0">
+								<div class="container">
+									<div class="row g-1">
+										<div class="col">
+											<input type="hidden" name="articleId"
+												th:value="${article.articleId}">
+											<textarea class="form-control" rows="1" placeholder="留言...."></textarea>
+										</div>
+										<div class="col-auto">
+											<button class="insert-comment-btn btn btn-outline-primary">送出</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</th:block>
+
+
+			<div class="d-flex justify-content-center">
+				<ul class="pagination">
+					<th:block th:switch="${page.number != 0}">
+						<li th:case=${true} class="page-item"><a class="page-link"
+							th:href="@{/forum/memberCenter/articleMange?(page=${page.number})}">&laquo;</span></a></li>
+						<li th:case=${false} class="page-item disabled"><span
+							class="page-link">&laquo;</span></li>
+					</th:block>
+
+
+					<th:block
+						th:each=" pageNumber : ${#numbers.sequence(1, page.totalPages)}">
+						<th:block th:switch="${page.number != pageNumber - 1 }">
+							<li th:case=${true} class="page-item"><a class="page-link"
+								th:href="@{/forum/memberCenter/articleMange?(page=${pageNumber})}">[[${pageNumber}]]</a></li>
+							<li th:case=${false} class="page-item active"><span
+								class="page-link" th:text="${pageNumber}"></span></li>
+						</th:block>
+					</th:block>
+
+					<th:block th:switch="${page.number == page.totalPages -1}">
+						<li th:case="${true}" class="page-item disabled"><span
+							class="page-link">&raquo;</span></li>
+						<li th:case="${false}" class="page-item"><a class="page-link"
+							th:href="@{/forum/memberCenter/articleMange?(page=${page.number+2})}">
+								<span>&raquo;</span>
+						</a></li>
+					</th:block>
+
+				</ul>
+			</div>
+
+
+		</main>
+
+		<footer class="py-4 bg-light mt-auto">
+			<div class="container-fluid px-4">
+				<div class="d-flex align-items-center justify-content-between small">
+					<div>
+						<!--請勿更動-->
+					</div>
+					<div class="text-muted">Copyright &copy; Travel Master 2023</div>
+				</div>
+			</div>
+		</footer>
+	</div>
+</div>
+
+
+
+<script th:src="@{/js/yeh/axios.min.js}"></script>
+<script th:src="@{/js/yeh/forumMemberCenter.js}"></script>
+<script>
+
+		let deleteBtn = document.querySelectorAll('.delete-article-btn');
+
+		for (let i = 0; i < deleteBtn.length; i++) {
+			deleteBtn[i].addEventListener('click', e => {
+				e.preventDefault();
+				let articleId = deleteBtn[i].getAttribute('data-articleId')
+				Swal.fire({
+					title: '確認刪除',
+					text: '您確定要刪除這篇文章嗎？',
+					icon: 'warning',
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					showCancelButton: true,
+					confirmButtonText: '確定',
+					cancelButtonText: '取消'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						deleteArticleRequest(articleId);
+					}
+				});
+
+			})
+		}
+
+		function deleteArticleRequest(targetArticleId) {
+			axios.delete(`http://localhost:8080/TM/forum/deleteArticle?articleId=${targetArticleId}`)
+				.then(response => {
+					Swal.fire({
+						title: '成功刪除',
+						text: '文章以成功刪除!',
+						icon: 'success'
+					});
+					
+					setTimeout(function() {
+						window.location.href = "http://localhost:8080/TM/forum/memberCenter/articleMange";
+					}, 500); 
+					
+					
+					
+				
+
+				})
+				.catch(error => {
+					Swal.fire({
+						title: '刪除失敗',
+						text: '無法刪除文章，請稍後再試。',
+						icon: 'error'
+					});
+				});
+
+		}
+
+
+
+
+	</script>
+
+
+</body>
+</html>

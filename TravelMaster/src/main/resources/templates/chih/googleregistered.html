@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div th:replace="~{layout/indexHeader}"></div>
+<main style="background-color:#dae0e7">
+		<div class="container" >
+			<!-- 首頁內容，目前沒東西 -->
+			<section class="h-100">
+			    <div class="row d-flex justify-content-center align-items-center h-100">
+			      <div class="col">
+			        <div class="card card-registration my-4">
+			          <div class="row g-0">
+			            <div class="col-xl-6 d-none d-xl-block" style="position: relative;">
+						    <video autoplay loop muted class="custom-video" poster="" style="width: 100%; height: 100%; border-top-left-radius: .25rem; border-bottom-left-radius: .25rem;">
+						        <source th:src="@{video/pagevideo.mp4}" type="video/mp4">
+						        Your browser does not support the video tag.
+						    </video>						   
+						</div>
+			            <div class="col-xl-6">
+			              <div class="card-body p-md-5 text-black">
+			                <h3 class="mb-5 text-uppercase" style="height:10px;margin-top:-20px;">註冊會員</h3>
+			                <form th:action="@{/savegoogleregistered.controller}" method="post">
+								<div class="form-outline mb-4">
+				                  <label class="form-label" for="membername">姓名</label>
+				                  <input type="text" id="membername" name="membername" class="form-control form-control-lg"  th:value="${memberName}" placeholder="請輸入真實姓名" required autocomplete="off"/>
+				                </div>
+				               
+				                <div class="d-md-flex justify-content-start align-items-center mb-4 py-2">
+								  <h6 class="mb-0 me-4">性別</h6>
+								  <div class="form-check form-check-inline mb-0 me-4">
+								    <input class="form-check-input" type="radio" name="membersex" id="m1" value="male" th:checked="${memberSex} == 'male'" required/>
+								    <label class="form-check-label" for="m1"><i class="fa-solid fa-mars"></i>&nbspMale</label>
+								  </div>
+								  <div class="form-check form-check-inline mb-0 me-4">
+								    <input class="form-check-input" type="radio" name="membersex" id="f1" value="female" th:checked="${memberSex} == 'female'"/>
+								    <label class="form-check-label" for="f1">&nbsp&nbsp&nbsp<i class="fa-solid fa-venus"></i>&nbspFemale</label>
+								  </div>
+								</div>
+				                
+				                <div class="form-outline mb-4">
+				                  <label class="form-label" for="membermail">E-mail</label>
+				                  <input type="email" id="membermail" name="membermail" class="form-control form-control-lg" th:value="${memberMail}" placeholder="example@gmail.com" required maxlength="30"
+												autocomplete="off"/>
+				                </div>
+				                
+				                <div class="form-outline mb-4">
+				                  <label class="form-label" for="memberphone">電話</label>
+				                  <input type="tel" id="memberphone" name="memberphone" class="form-control form-control-lg" pattern="[0-9]{10}" placeholder="請輸入10位數字" required
+												maxlength="10" autocomplete="off"/>
+				                </div>
+						
+				                <div class="form-outline mb-4">
+				                  <label class="form-label" for="memberadd">地址</label>
+				                  <input type="text" id="memberadd" name="memberadd" class="form-control form-control-lg" placeholder="請輸入詳細地址" required maxlength="40" autocomplete="off"/>
+				                </div>
+				                
+				                <div class="form-outline mb-4">
+				                  <label class="form-label" for="memberid">身分證</label>
+				                  <input type="text" id="memberid" name="memberid" class="form-control form-control-lg" pattern="[A-Za-z][0-9]{9}" placeholder="請輸入正確的身分證" required
+												maxlength="10" autocomplete="off"/>
+				                </div>		
+				
+				                <div class="d-flex justify-content-end pt-3">
+				                  <input type="button" class="btn btn-warning btn-lg ms-2" value="取消" onclick="backLogin()"></input>
+				                  <input type="submit" class="btn btn-warning btn-lg ms-2 registered" value="註冊"></input>
+				                </div>
+							</form>
+			              </div>
+			            </div>
+			            
+			          </div>
+			        </div>
+			      </div>
+			    </div>
+			</section>
+		</div>
+	</main>
+
+<div th:replace="~{layout/indexFooter}"></div>
+	<!-- JAVASCRIPT FILES -->
+	<script th:src="@{https://code.jquery.com/jquery-3.6.0.min.js}"></script>
+	<script th:src="@{js/index/jquery.min.js}"></script>
+	<script th:src="@{js/index/bootstrap.min.js}"></script>
+	<script th:src="@{js/index/jquery.sticky.js}"></script>
+	<script th:src="@{js/index/custom.js}"></script>
+	<script th:src="@{https://kit.fontawesome.com/0a9f356c66.js}"
+		th:crossorigin="@{anonymous}"></script>
+
+<script th:inline="javascript">
+function backLogin() {
+	 window.location.href = "login.controller";
+}
+</script>
+</body>
+</html>

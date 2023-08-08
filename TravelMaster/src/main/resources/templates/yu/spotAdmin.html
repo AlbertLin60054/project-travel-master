@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>台灣景點維護</title>
+</head>
+<style>
+td {
+	vertical-align: top;
+}
+
+.image-container {
+	width: 30%;
+	height: 30%;
+	overflow: hidden;
+}
+
+.image-container:hover  {
+	width: 80%;
+	height: 80%;
+	overflow: hidden;
+}
+
+.spot-info {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 250px;
+}
+
+.spot-info:hover {
+	white-space: normal;
+	max-width: none;
+}
+</style>
+<body>
+	<div th:replace="~{layout/dashboardHeader}"></div>
+	<main>
+		<div class="container-fluid px-4">
+			<div class="d-flex justify-content-between align-items-center">
+				<h1 class="mt-4">景點維護</h1>
+				<button type="button" title="" class="btn btn-outline-dark mt-3"
+					id="insert" th:onclick="insert()">
+					<i class="fa-solid fa-plus"></i> 新增
+				</button>
+				<button type="button" title="" class="btn btn-outline-dark mt-3"
+					id="exportBtn">
+					<i class="fa-solid fa-download"></i> 報表匯出
+				</button>
+				<button type="button" title="" class="btn btn-outline-dark mt-3"
+					id="" th:onclick="chartJS()">
+					<i class="fa-solid fa-magnifying-glass-chart"></i> 圖表分析
+				</button>
+			</div>
+			<hr>
+			<div class="card mb-4">
+				<div class="card-header">
+					<i class="fas fa-table me-1"></i>所有景點
+				</div>
+				<div class="card-body">
+					<article class="text-center container">
+						<section class="timetable-search-frame bg-grey">
+							<div class="container">
+								<div class="download-ttable"></div>
+								<div class="ha-nav-content">
+
+									<table id="queryResult"
+										class="table table-bordered table-striped table-sm"
+										style="width: 100%;">
+										<thead class="table-light">
+											<tr>
+												<th nowrap>編號</th>
+												<th nowrap>名稱</th>
+												<th nowrap>地區</th>
+												<th nowrap>縣市</th>
+												<th nowrap>類型</th>
+												<th nowrap>說明</th>
+												<th nowrap>圖片</th>
+												<th nowrap>點擊數</th>
+												<th nowrap>編輯</th>
+												<th nowrap>刪除</th>
+											</tr>
+										</thead>
+										<tbody id="queryContent">
+											<th:block th:each="spot : ${spots}">
+												<tr>
+													<td th:text="${spot?.spotNo}"></td>
+													<td th:text="${spot?.spotName}"></td>
+													<td th:text="${spot?.cityRegion}"></td>
+													<td th:text="${spot?.cityName}"></td>
+													<td th:text="${spot?.spotType}"></td>
+													<td>
+														<div class="spot-info" th:text="${spot?.spotInfo}"
+															th:attr="data-full-text=${spot?.spotInfo}">
+															${spot?.spotInfo?.length() > 50 ?
+															spot?.spotInfo?.substring(0, 25) + '...' :
+															spot?.spotInfo}</div>
+													</td>
+													<td><div class="image-container">
+															<img
+																th:src="@{/images/yu/{filename}(filename=${spot?.spotPic})}"
+																style="max-width: 100%; max-height: 100%;" />
+														</div>
+													<td th:text="${spot?.clickCount}"></td>
+													<td>
+														<button class="btn btn-outline-secondary btn-sm"
+															type="submit" id="editBtn"
+															th:onclick="|update(${spot.spotNo})|">
+															<i class="fa-solid fa-pen-to-square"></i>
+														</button>
+													</td>
+													<td>
+														<button class="btn btn-outline-secondary btn-sm "
+															id="deleteBtn" th:onclick="|deleteNo(${spot.spotNo})|">
+															<i class="fa-solid fa-trash-can"></i>
+														</button>
+													</td>
+												</tr>
+											</th:block>
+										</tbody>
+									</table>
+									<div class="modal fade" id="checkModal" tabindex="-1"
+										aria-labelledby="checkModalLabel" aria-hidden="true">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="checkModalLabel">刪除</h5>
+													<button type="button" class="btn-close"
+														data-bs-dismiss="modal" aria-label="Close"></button>
+												</div>
+												<div class="modal-body" id="ConfirmMsg"></div>
+												<input type="hidden" id="deleteTarget">
+												<div class="modal-footer">
+													<button type="button" class="btn btn-danger"
+														data-bs-dismiss="modal">取消</button>
+													<button type="button" class="btn btn-primary"
+														th:onclick="doDeleteNo()">確定</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</section>
+					</article>
+				</div>
+			</div>
+		</div>
+	</main>
+	<div th:replace="~{layout/dashboardHeader}"></div>
+	<script th:src="@{/js/yu/ExportFile.js}"></script>
+	<script th:inline="javascript">
+	function insert() {
+	location.href = "/TM/spotList/insert";
+}
+
+function chartJS() {
+	location.href = "/TM/spotList/chart";
+}
+	
+	function update(id) {
+	location.href = `/TM/spotList/update?id=${id}`;
+}
+
+	function deleteNo(spotNo) {
+		console.log(spotNo);
+		document.querySelector("#deleteTarget").value = spotNo;
+		document.querySelector("#ConfirmMsg").innerHTML = `確定刪除 編號${spotNo}? 刪除後無法復原!`;
+		$("#checkModal").modal("show");
+		$("#checkModal").css("z-index", "1500");
+	}
+	
+	function doDeleteNo() {
+		let deleteTarget = document.querySelector("#deleteTarget").value;
+		location.href = `/TM/spotList/delete?spotNo=${deleteTarget}`;
+	}
+	
+	var myModal;
+	var checkModal;
+		$(document).ready(function() {
+		$('#queryResult').DataTable();
+		myModal = document.getElementById("deleteBtn");
+		checkModal = new bootstrap.Modal(document.getElementById('checkModal'));
+
+});	
+
+
+
+
+// 获取表格中的数据
+var table = document.getElementById("queryResult");
+var data = [];
+for (var i = 1; i < table.rows.length; i++) {
+  var row = table.rows[i];
+  var cityName = row.cells[3].innerText;
+  var clickCount = parseInt(row.cells[7].innerText);
+  data.push({ cityName: cityName, clickCount: clickCount });
+}
+
+// 将图表数据保存在本地存储中
+localStorage.setItem("chartData", JSON.stringify(data));
+console.log(data);
+</script>
+</body>
+
+</html>

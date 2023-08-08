@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>套裝行程</title>
+
+    <!-- 商品頁套件 -->
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css'>
+
+    <link th:href="@{/css/sean/productPage.css}" rel="stylesheet">
+
+    <!-- 日期選擇器 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <!-- 日期選擇器 -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+</head>
+
+<body>
+    <div th:replace="~{layout/indexHeader}"></div>
+    <main>
+        <!-- 搜尋欄位 -->
+        <br>
+        <div class="container" id="searchFormContainer">
+            <form id="searchForm" th:action="@{/sean/productQuery}">
+                <div class="row" style="margin-left: 120px;">
+                    <div class="col-md-2 mb-3">
+                        <label for="destination" class="form-label">類型:</label> <select class="form-select"
+                            id="destination" name="productType">
+                            <option value="">全部</option>
+                            <option value="國內">國內</option>
+                            <option value="國外">國外</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label for="productStartDate" class="form-label"><i class="fa-regular fa-clock"></i>
+                            啟程日期:</label> <input type="text" class="form-control datepicker" id="productStartDate"
+                            name="productStartDate" placeholder="請點擊選擇日期:">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label for="sort" class="form-label">價格排序:</label> <select class="form-select" id="sort"
+                            name="sort">
+                            <option value="">不排序</option>
+                            <option value="asc">價格低到高</option>
+                            <option value="desc">價格高到低</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label for="status" class="form-label">商品狀態:</label> <select class="form-select" id="status"
+                            name="productStatus">
+                            <option value="">全部</option>
+                            <option value="上架">上架</option>
+                            <option value="下架">下架</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label for="search" class="form-label">搜尋:</label> <input type="text" class="form-control"
+                            id="search" name="search" placeholder="輸入關鍵字">
+                    </div>
+                    <div class="col-md-2 mb-3" style="margin-top: 30px;">
+                        <button type="submit" class="btn btn-outline-dark flex-shrink-0 queryBtn">查詢</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <hr>
+        <!-- 新增商品按鈕 -->
+        <div class="fixed-bottom mb-3 me-3 text-end">
+            <button class="btn btn-outline-dark flex-shrink-0 edit-btn" style="font-size: 1.8em;" data-bs-toggle="modal"
+                data-bs-target="#addProductModal">
+                <i class="fa-solid fa-plus"></i>新增商品
+            </button>
+        </div>
+
+        <!-- 商品欄位 -->
+        <section>
+            <div class="container px-4 px-lg-5 my-5">
+                <div id="productContainer">
+                    <th:block th:each="product : ${products}">
+                        <div class="row gx-4 gx-lg-5 align-items-center">
+                            <div class="col-md-6">
+                                <img class="card-img-top mb-5 mb-md-0 product-image"
+                                    th:src="@{'/sean/getImage/' + ${product.productId}}" alt="未上傳照片.." />
+                            </div>
+                            <div class="col-md-6">
+                                <!-- 上下架 -->
+                                <div class="status" th:id="'statusText-' + ${product.productId}"
+                                    th:text="${product.productStatus + '中'}"></div>
+                                <form id="toggleForm"
+                                    th:action="@{/sean/toggleStatus/{productId}(productId=${product.productId})}"
+                                    method="post">
+                                    <button class="toggle-button" type="submit" onclick="confirmToggle(event)">
+                                        <i th:id="'toggleIcon-' + ${product.productId}"
+                                            th:class="${product.productStatus == '上架' ? 'fa-solid fa-toggle-on' : 'fa-solid fa-toggle-off'}"></i>
+                                    </button>
+                                </form>
+                                <h1 class="display-5 fw-bolder" th:text="${product.productName}"></h1>
+                                <div class="fs-5">
+                                    行程編號: <span th:text="${product.productId}"></span>
+                                </div>
+                                <div class="fs-5">
+                                    <span class="text-decoration"
+                                        th:text="'行程價格 : ' + '$' + ${product.productPrice}"></span>
+                                </div>
+                                <div class="fs-5">
+                                    <span class="text-decoration"
+                                        th:text="'行程名額 : ' + ${product.productQuantity}"></span>
+                                </div>
+                                <div class="fs-5">
+                                    <span class="text-decoration"
+                                        th:text="'當前報名人數 : ' + ${product.productRegistrations}"></span>
+                                </div>
+                                <div class="fs-5">
+                                    <span class="text-decoration" th:text="'行程類別 : ' + ${product.productType}"></span>
+                                </div>
+                                <div class="fs-5">
+                                    <span class="text-decoration" th:text="'行程狀態 : ' + ${product.productStatus}"></span>
+                                </div>
+                                <div class="fs-5">
+                                    <span class="text-decoration"
+                                        th:text="'行程日期 : ' + ${#dates.format(product.productStartDate, 'yyyy-MM-dd')} + ' 至 ' + ${#dates.format(product.productEndDate, 'yyyy-MM-dd')}"></span>
+                                </div>
+                                <div class="fs-5">
+                                    <span class="text-decoration"
+                                        th:text="'行程簡介 : ' + ${product.productDescription}"></span>
+                                </div>
+                                <br>
+                                <div class="d-flex">
+
+                                    <!-- 加入購物車 -->
+                                    <form th:action="@{/sean/addToCart}" method="post" class="addToCartForm">
+                                        <input type="hidden" name="productId" th:value="${product.productId}" /> <input
+                                            type="hidden" name="productType" th:value="${product.productType}" /> <input
+                                            type="hidden" name="productName" th:value="${product.productName}" /> <input
+                                            type="hidden" name="productPrice" th:value="${product.productPrice}" />
+                                        <!-- 報名預設人數 -->
+                                        <input type="hidden" name="productRegistrations" th:value="1" />
+                                        <input type="hidden" name="productQuantity"
+                                            th:value="${product.productQuantity}" /> <input type="hidden"
+                                            name="productDescription" th:value="${product.productDescription}" /> <input
+                                            type="hidden" name="productStartDate"
+                                            th:value="${product.productStartDate}" /> <input type="hidden"
+                                            name="productEndDate" th:value="${product.productEndDate}" /> <input
+                                            type="hidden" name="productStatus" th:value="${product.productStatus}" />
+                                        <!-- 加入購物車btn -->
+                                        <button type="submit"
+                                            class="btn btn-outline-dark flex-shrink-0 add-to-cart-btn">
+                                            <i class="bi-cart-fill me-1"></i>加入購物車
+                                        </button>
+                                    </form>
+                                    &nbsp;
+
+                                    <!-- 編輯商品btn -->
+                                    <button class="btn btn-outline-dark flex-shrink-0 edit-btn"
+                                        th:onclick="'editProduct('+${product.productId}+')'">
+                                        <i class="bi-pencil-fill me-1"></i>編輯
+                                    </button>
+
+                                </div>
+                                <br>
+
+                                <!-- 編輯商品 -->
+                                <div class="edit-form" th:id="'editForm-' + ${product.productId}">
+                                    <form method="post" th:action="@{/sean/editProduct}" enctype="multipart/form-data">
+                                        <input type="hidden" name="productId" th:value="${product.productId}">
+                                        <div class="mb-3">
+                                            <label for="productName" class="form-label"> <i
+                                                    class="fa-solid fa-file-signature"></i> 行程名稱:
+                                            </label> <input type="text" class="form-control" id="productName"
+                                                name="productName" th:value="${product.productName}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="productPrice" class="form-label"> <i
+                                                    class="fa-solid fa-dollar-sign"></i> 行程售價:
+                                            </label> <input type="number" class="form-control" id="productPrice"
+                                                name="productPrice" th:value="${product.productPrice}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="productQuantity" class="form-label"> <i
+                                                    class="fa-solid fa-person-walking"></i> 行程名額:
+                                            </label> <input type="number" class="form-control" id="productQuantity"
+                                                name="productQuantity" th:value="${product.productQuantity}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="productType" class="form-label"><i
+                                                    class="fa-regular fa-font-awesome"></i> 行程類別:</label> <select
+                                                class="form-select" id="productType" th:value="${product.productType}"
+                                                name="productType" required>
+                                                <option value="國內" th:selected="${product.productType == '國內'}">國內
+                                                </option>
+                                                <option value="國外" th:selected="${product.productType == '國外'}">國外
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="productStartDate" class="form-label"> <i
+                                                    class="fa-regular fa-clock"></i> 啟程日期:
+                                            </label> <input type="date" class="form-control" id="productStartDate"
+                                                name="productStartDate"
+                                                th:value="${#dates.format(product.productStartDate, 'yyyy-MM-dd')}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="productEndDate" class="form-label"> <i
+                                                    class="fa-solid fa-clock"></i> 返程日期:
+                                            </label> <input type="date" class="form-control" id="productEndDate"
+                                                name="productEndDate"
+                                                th:value="${#dates.format(product.productEndDate, 'yyyy-MM-dd')}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="productDescription" class="form-label"> <i
+                                                    class="fa-solid fa-pen"></i> 行程簡介:
+                                            </label>
+                                            <textarea class="form-control" id="productDescription"
+                                                name="productDescription" rows="3"
+                                                th:text="${product.productDescription}"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="productImage" class="form-label"> <i
+                                                    class="fa-regular fa-image"></i> 行程照片
+                                            </label> <input type="file" class="form-control" id="productImage"
+                                                name="productImage">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                        <button type="button" class="btn btn-secondary"
+                                            th:onclick="'cancelEdit('+${product.productId}+')'">Cancel</button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div style="height: 50px;"></div>
+                            <!-- 加入空的 div 元素並設定高度 -->
+                            <hr>
+                            <div style="height: 20px;"></div>
+                            <!-- 加入空的 div 元素並設定高度 -->
+                        </div>
+                    </th:block>
+                </div>
+                <div id="loadMoreContainer" class="text-center">
+                    <a>往下顯示更多 <i class="fa-solid fa-angles-down"></i></a>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 新增商品的彈跳視窗 -->
+        <div class="modal fade modal-custom-size" id="addProductModal" tabindex="-1"
+            aria-labelledby="addProductModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addProductModalLabel">新增商品</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" th:action="@{/sean/addProduct}" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="productName" class="form-label"><i class="fa-solid fa-file-signature"></i>
+                                    行程名稱:</label> <input type="text" class="form-control productName" id="productName"
+                                    name="productName" placeholder="輸入行程名稱" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productPrice" class="form-label"><i class="fa-solid fa-dollar-sign"></i>
+                                    行程售價:</label> <input type="number" class="form-control productPrice"
+                                    id="productPrice" name="productPrice" placeholder="輸入行程售價" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productQuantity" class="form-label"><i
+                                        class="fa-solid fa-person-walking"></i> 行程名額:</label> <input type="number"
+                                    class="form-control productQuantity" id="productQuantity" name="productQuantity"
+                                    placeholder="輸入行程名額" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productType" class="form-label"><i class="fa-regular fa-font-awesome"></i>
+                                    行程類別:</label> <select class="form-select productType" id="productType"
+                                    name="productType" required>
+                                    <option value="國內">國內</option>
+                                    <option value="國外">國外</option>
+                                </select>
+                            </div>
+                            <!-- 啟程返程日期 -->
+                            <div class="mb-3">
+                                <label for="productStartDate" class="form-label"><i class="fa-regular fa-clock"></i>
+                                    啟程日期:</label> <input type="text" class="form-control flatpickr productStartDate"
+                                    id="productStartDate" name="productStartDate"> <span id="startDateError"
+                                    class="error-text"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productEndDate" class="form-label"><i class="fa-solid fa-clock"></i>
+                                    返程日期:</label> <input type="text" class="form-control flatpickr productEndDate"
+                                    id="productEndDate" name="productEndDate" required> <span id="endDateError"
+                                    class="error-text"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productDescription" class="form-label"><i class="fa-solid fa-pen"></i>
+                                    行程簡介:</label>
+                                <textarea class="form-control productDescription" id="productDescription"
+                                    name="productDescription" rows="3" placeholder="輸入行程簡介" required></textarea>
+                            </div>
+                            <!-- 隱藏預設值 -->
+                            <input type="hidden" id="productStatus" name="productStatus" value="上架"> <input
+                                type="hidden" class="productQuantity" id="productQuantity" name="productQuantity"
+                                value="1">
+                            <div class="mb-3">
+                                <label for="productImage" class="form-label"><i class="fa-regular fa-image"></i>
+                                    行程照片</label> <input type="file" class="form-control" id="productImage"
+                                    name="productImage" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">新增</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary OneTap">OneTap</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <!-- js -->
+    <div th:replace="~{layout/indexFooter}"></div>
+    <script th:src="@{/js/sean/productPage.js}"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>和 你 一 起 旅 行</title>
+<link rel="stylesheet" type="text/css"
+	href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+<link rel="stylesheet" type="text/css"
+	href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
+<style>
+.bd-placeholder-img {
+	font-size: 1.125rem;
+	text-anchor: middle;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+}
+
+@media ( min-width : 768px) {
+	.bd-placeholder-img-lg {
+		font-size: 3.5rem;
+	}
+}
+
+.b-example-divider {
+	width: 100%;
+	height: 3rem;
+	background-color: rgba(0, 0, 0, .1);
+	border: solid rgba(0, 0, 0, .15);
+	border-width: 1px 0;
+	box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em
+		rgba(0, 0, 0, .15);
+}
+
+.b-example-vr {
+	flex-shrink: 0;
+	width: 1.5rem;
+	height: 100vh;
+}
+
+.bi {
+	vertical-align: -.125em;
+	fill: currentColor;
+}
+
+.nav-scroller {
+	position: relative;
+	z-index: 2;
+	height: 2.75rem;
+	overflow-y: hidden;
+}
+
+.nav-scroller .nav {
+	display: flex;
+	flex-wrap: nowrap;
+	padding-bottom: 1rem;
+	margin-top: -1px;
+	overflow-x: auto;
+	text-align: center;
+	white-space: nowrap;
+	-webkit-overflow-scrolling: touch;
+}
+
+.btn-bd-primary {
+	--bd-violet-bg: #712cf9;
+	--bd-violet-rgb: 112.520718, 44.062154, 249.437846;
+	--bs-btn-font-weight: 600;
+	--bs-btn-color: var(--bs-white);
+	--bs-btn-bg: var(--bd-violet-bg);
+	--bs-btn-border-color: var(--bd-violet-bg);
+	--bs-btn-hover-color: var(--bs-white);
+	--bs-btn-hover-bg: #6528e0;
+	--bs-btn-hover-border-color: #6528e0;
+	--bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
+	--bs-btn-active-color: var(--bs-btn-hover-color);
+	--bs-btn-active-bg: #5a23c8;
+	--bs-btn-active-border-color: #5a23c8;
+}
+
+.bd-mode-toggle {
+	z-index: 1500;
+}
+
+.el-carousel__item h3 {
+	color: #475669;
+	font-size: 14px;
+	opacity: 0.75;
+	line-height: 200px;
+	margin: 0;
+}
+
+.el-carousel__item:nth-child(2n) {
+	background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n+1) {
+	background-color: #d3dce6;
+}
+
+.cardleo {
+	margin: 0 10px;
+	height: 100%;
+	border: 3px solid rgb(208, 233, 240);
+	border-radius: 20px;
+}
+
+.leoimg {
+	width: 100px;
+	height: 300px;
+	object-fit: cover;
+	border-radius: 15px;
+}
+
+.carousel-inner:hover .leoimg {
+	transform: scale(1.3);
+	border-radius: 10px;
+	transition: transform 1s ease;
+}
+
+#leoTopBtn {
+	display: none;
+	position: fixed; /* 使用固定位置 */
+	bottom: 20px;
+	right: 30px;
+	z-index: 99; /* 確保不會被其他元素覆蓋 */
+	border: none;
+	outline: none;
+	background-color: lightblue;
+	color: white;
+	cursor: pointer;
+	padding: 18px;
+	border-radius: 100px;
+	font-size: 20px;
+}
+
+#leoTopBtn:hover {
+	background-color: #555;
+}
+</style>
+</head>
+<body>
+	<div th:replace="~{leo/client/indexNavbar}"></div>
+	<main>
+		<div class="container marketing">
+
+			<section class="py-5 text-center container"
+				style="display: flex; justify-content: center;">
+
+				<div class="card mb-3"
+					style="width: 90%; height: 95%; border-radius: 15px; background-color: #fffcf6;">
+					<div class="row g-0">
+						<div class="col-md-4">
+							<div th:id="'carouselExampleControls'+${playone.PlayoneId}"
+								class="carousel slide" data-bs-ride="carousel">
+								<div class="carousel-inner"
+									style="max-width: 100%; height: 100%;">
+									<th:block th:each="img, stat : ${playone.playoneImgs}">
+										<div class="carousel-item active" data-bs-interval="3000"
+											th:class="${stat.first} ? 'carousel-item active' : 'carousel-item'"
+											style="height: 400px;">
+											<img th:src="'data:image/jpeg;base64,' + ${img.base64Photo}"
+												class="d-block w-100 img" alt="Playone photo"
+												style="max-height: 100%; max-width: 100%; object-fit: contain; object-position: center; border-radius: 15px;">
+										</div>
+									</th:block>
+								</div>
+
+								<button class="carousel-control-prev"
+									th:data-target="'#carouselExampleControls' + ${playone.playoneId}"
+									role="button" data-slide="prev">
+									<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+									<span class="visually-hidden">Previous</span>
+								</button>
+
+								<button class="carousel-control-next"
+									th:data-target="'#carouselExampleControls' + ${playone.playoneId}"
+									role="button" data-slide="next">
+									<span class="carousel-control-next-icon" aria-hidden="true"></span>
+									<span class="visually-hidden">Next</span>
+								</button>
+							</div>
+							<div class="nic" id="nic" name="nic"
+								th:text="${playone.playoneNick}"
+								style="width: 100%; display: block; color: #0e548f; font-size: 50px; font-weight: bold;"></div>
+							<div class="ins" id="ins" name="ins"
+								th:text="'🌷'+${playone.playoneInterest}+'🌷'"
+								style="display: flex; justify-content: center; align-items: center; width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 100%; color: #dd820c; font-size: 30px; font-weight: bold;"></div>
+							<br />
+						</div>
+						<div class="col-md-8" style="position: relative;">
+							<div class="card-body">
+								<p
+									style="font-size: 40px; text-align: left; font-weight: bold; color: rgb(126, 73, 139); margin: 0;">
+									🤍關 於 我🤍</p>
+								<p class="id" id="id" name="id"
+									th:text="'旅伴編號: '+${playone.playoneId}"
+									style="width: 100%; font-size: 20px; text-align: left; margin: 0;"></p>
+								<hr />
+								<div class="age" id="age" name="age"
+									th:text="'我是一個 '+${playone.age}+' 歲的'+${playone.Zodiac}+${playone.playoneSex}+'生❤️'"
+									style="width: 100%; font-size: 28px; text-align: left; font-weight: bold;"></div>
+								<br />
+								<div class="int" id="int" name="int"
+									th:text="${playone.playoneIntroduce}"
+									style="width: 100%; overflow: hidden; white-space: pre-wrap; text-overflow: ellipsis; max-width: 100%; color: #524ed5; font-size: 28px; text-align: left; font-weight: bold; margin-bottom: 70px;"></div>
+								<p class="3000day"
+									style="position: absolute; right: 0; bottom: 0; margin: 4% 180px; font-size: 25px;">3000
+									/ Day</p>
+
+								<!-- 加入購物車 -->
+								<form th:action="@{/sean/addPlayoneToCart}" method="post"
+									class="addToCartForm">
+									<input type="hidden" name="playoneId"
+										th:value="${playone.playoneId}" /> <input type="hidden"
+										name="playoneNick" th:value="${playone.playoneNick}" />
+									<!-- 加入購物車btn -->
+									<button type="submit"
+										class="btn btn-outline-warning add-to-cart-btn leoOrder"
+										style="position: absolute; right: 5px; bottom: 2%; margin: 15px; font-size: 25px;">立即邀請</button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<hr class="featurette-divider" />
+			<div class="hotPlayone"></div>
+			<hr class="featurette-divider" />
+			<div class="leoHistoryFragment"></div>
+		</div>
+		<button onclick="topFunction()" id="leoTopBtn" title="Go to top">
+			<i class="fa-solid fa-chevron-up"></i>
+		</button>
+	</main>
+
+	<div th:replace="~{leo/client/indexFooter}"></div>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+	<script type="text/javascript"
+		src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+	<script
+		src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+		crossorigin="anonymous"></script>
+	<script type="text/javascript">
+	
+	//alert提醒(事件代理)
+	$(document).ready(function() {
+		$(document).on('submit', '.addToCartForm', function(event) {
+			event.preventDefault();
+	
+			var form = $(this);
+	
+			$.ajax({
+				url: '/TM/sean/addPlayoneToCart',
+				type: 'POST',
+				data: form.serialize(),
+				success: function(response) {
+					if (response === '已成功加入商品') {
+						Swal.fire({
+							title: 'Success',
+							text: response,
+							icon: 'success',
+							confirmButtonText: 'OK'
+						});
+					} else if (response === '商品已存在於購物車中') {
+						Swal.fire({
+							title: 'Warning',
+							text: response,
+							icon: 'warning',
+							confirmButtonText: 'OK'
+						});
+					}
+				},
+				error: function(xhr, status, error) {
+					if (xhr.responseText === '請先登入') {
+						Swal.fire({
+							title: 'Error',
+							text: xhr.responseText,
+							icon: 'error',
+							confirmButtonText: 'OK'
+						}).then(() => {
+							window.location.href = '/TM/login.controller';
+						});
+					} else {
+						Swal.fire({
+							title: 'Error',
+							text: xhr.responseText,
+							icon: 'error',
+							confirmButtonText: 'OK'
+						});
+					}
+				}
+			});
+		});
+	});
+	
+	$(document).ready(function() {
+    $.ajax({
+        url: window.location.origin + "/TM/js/leo/hotPage.js",
+        type: 'GET',
+        dataType: "script",
+        success: function() {
+            $.ajax({
+                url: "/TM/playone/byHot",
+                type: 'GET',  
+                data: {p: 1},
+                success: function(data) {
+                    $(".hotPlayone").append(data);
+                }
+            });
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error('Error loading script', textStatus, errorThrown);
+        }
+    });
+    
+      var visitedPlayones = JSON.parse(sessionStorage.getItem('visitedPlayones')) || [];
+
+    $.ajax({
+        type: "GET",
+        url: "/TM/playone/byHistory",
+        data: {
+            ids: visitedPlayones.join(",")
+        },
+        success: function(data) {
+            $(".leoHistoryFragment").append(data);
+        },
+        dataType: "html"
+    });
+});
+
+
+
+		window.onscroll = function() {scrollFunction()};
+		
+		function scrollFunction() {
+		    if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
+		        document.getElementById("leoTopBtn").style.display = "block";
+		    } else {
+		        document.getElementById("leoTopBtn").style.display = "none";
+		    }
+		}
+		
+		function topFunction() {
+		    document.body.scrollTop = 0;
+		    document.documentElement.scrollTop = 0;
+		}
+		
+		
+	</script>
+</body>
+</html>

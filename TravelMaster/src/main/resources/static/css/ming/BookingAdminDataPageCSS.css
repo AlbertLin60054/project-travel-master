@@ -1,0 +1,19 @@
+.article{
+	display: flex;
+ 	 /* 水平置中 */
+ 	justify-content: center;    
+  	/* 垂直置中 */
+  	align-items: center;     
+}
+
+.aside {
+	width: 500px;
+	border: 2px solid rgb(215, 211, 211);
+	border-radius: 30px;
+	box-shadow: 3px 3px 3px gray;
+}
+
+.section {
+	padding: 40px 40px 5px 40px;
+	line-height: 2em;
+}

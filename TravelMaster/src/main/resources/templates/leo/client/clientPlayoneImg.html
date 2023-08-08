@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+
+<head>
+<meta charset="UTF-8">
+<title>更 新 旅 伴 照 片</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link
+	href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css"
+	rel="stylesheet" />
+<link
+	href="https://cdn.datatables.net/v/dt/dt-1.13.4/datatables.min.css"
+	rel="stylesheet" />
+<style>
+.leoimg {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+}
+
+.leoimg2 {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.containerimg {
+	border: 1px solid rgb(192, 192, 192);
+	border-radius: 10px;
+	margin: 0 auto;
+	display: inline-flex;
+	overflow-y: hidden;
+	overflow-x: auto;
+	width: 800px;
+	height: auto;
+	position: relative;
+}
+
+.image-container {
+	display: flex;
+	justify-content: flex-start;
+	flex-wrap: nowrap;
+}
+
+.image-container img {
+	border-radius: 10px;
+	height: 130px;
+}
+
+.imageblock {
+	position: relative;
+	margin-right: 10px;
+	min-width: 130px;
+}
+
+.deleteButton {
+	position: absolute;
+	top: 0;
+	right: 0;
+	background: gray;
+	color: white;
+	border-radius: 50%;
+	cursor: pointer;
+	padding: 0px 5px;
+}
+
+.container-wrapper {
+	position: relative;
+}
+
+.newImgBlock {
+	margin-top: 15px;
+	border-radius: 10px;
+	width: 130px;
+	height: 130px;
+	border: 1px solid rgb(192, 192, 192);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.button-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 30px;
+}
+
+.button-container button {
+	margin: 0 10px;
+	padding: 10px 20px;
+}
+
+.menu {
+	cursor: pointer;
+	font-size: 20px;
+}
+
+.newImgSub {
+	display: block;
+	margin-left: 45px;
+	font-size: 2.4em;
+	cursor: pointer;
+	border: none;
+	background-color: transparent;
+}
+</style>
+</head>
+
+<body>
+			<div class="container-fluid px-4">
+				<div class="leoimg">
+					<div class="containerimg">
+						<div class="image-container">
+							<th:block th:each="playoneImg:${playoneImgList}"
+								th:object="${playoneImgList}">
+								<div class="imageblock">
+									<input type="button" class="deleteButton"
+										th:id="'deleteButton_' + ${playoneImg.playoneimgId}" value="X"
+										th:data-playoneimg-id="${playoneImg.playoneimgId}"
+										style="position: absolute;" /> <img class="d-block w-100 img"
+										th:src="'data:image/jpeg;base64,' + ${playoneImg.base64Photo}"
+										alt="playone photo"> <input type="hidden"
+										class="originalImg" name="originalImg"
+										th:value="${playoneImg.base64Photo}">
+								</div>
+							</th:block>
+						</div>
+					</div>
+				</div>
+				<div class="leoimg2">
+					<form method="post" th:action="@{/playone/clientimgnew}"
+						enctype="multipart/form-data">
+						<div class="newImgBlock">
+							<input type="hidden" name="playoneId"
+								th:value="${playoneImgList[0].playone.playoneId}"> <input
+								type="file" class="photoInput" name="newPlayoneImg"
+								id="newPlayoneImg" style="display: none;">
+							<p class="newImgP">點選新增圖片</p>
+						</div>
+						<div class="newImgSub2">
+							<button type="submit" class="newImgSub" id="newImgSub" value="">
+								<i class="fa-solid fa-check fa-beat"></i>
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+	<script type="text/javascript">
+        function readURL(input, imgElement, originalImgElement) {
+            // 檢查是否有選擇檔案
+            if (input.files && input.files[0]) {
+                // 建立一個檔案讀取器 FileReader 物件
+                var reader = new FileReader();
+                // 設定當檔案讀取完成時要做的事情
+                reader.onload = function (e) {
+                    // 將 img 元素的 src 屬性設定為讀取的結果
+                    imgElement.attr('src', e.target.result);
+                    // 去除圖片的 base64 前綴並將結果儲存到原圖的元素中
+                    var base64Data = e.target.result.replace(/^data:image\/(png|jpeg|jpg);base64,/, "");
+                    originalImgElement.val(base64Data);
+                }
+                // 讀取檔案內容並將其轉換為 base64 格式
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+
+
+        $(document).ready(function () {
+
+            $(".deleteButton").click(function () {
+                var playoneImgId = $(this).data("playoneimg-id");  // 圖片ID
+                var deleteButton = this;  // 點擊的刪除按鈕
+                var imgBlocks = $(".imageblock");  // 抓所有圖片
+
+                if (imgBlocks.length <= 1) {  // 檢查是否剩一張
+                    // 如果是，提示不能再删除
+                    alert("至少要保留一張照片");
+                    return;
+                }
+                console.log(playoneImgId);  // 確認圖片ID
+
+                $.ajax({
+                    url: "/TM/playone/imgdelete",
+                    type: 'POST',
+                    data: { playoneimgid: playoneImgId },
+                    success: function (data) {
+                        if (data === "success") {
+                            // 如果删除成功，將圖片從頁面上移除
+                            $(deleteButton).closest(".imageblock").remove();
+                        } else {
+                            // 如果刪除失敗，顯示錯誤
+                            alert("删除失敗");
+                        }
+                    },
+                    error: function () {
+                        // handle error
+                        alert("删除失敗");
+                    }
+                });
+            });
+
+
+
+
+            $(".newImgBlock").click(function () {
+                $(this).find(".photoInput").click();
+            });
+
+            $(".photoInput").change(function () {
+                let input = this;
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        // 將選擇到的 newImgBlock 的背景設定為選擇的圖片
+                        $(input).closest('.newImgBlock').css('background-image', 'url(' + e.target.result + ')');
+                        $(input).closest('.newImgBlock').css('background-size', 'cover');
+                        // 隱藏 newImgP
+                        $(input).siblings('.newImgP').css('display', 'none');
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            });
+
+            $(".photoInput").click(function (event) {
+                event.stopPropagation();
+            });
+        });
+    </script>
+</body>
+
+</html>

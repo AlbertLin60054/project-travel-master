@@ -1,0 +1,384 @@
+/**
+ * @TODO:
+ *  1. Refactor a bit, is messy.
+ *  2. Colors good, fonts meh.
+ *  3. Finish actual cart layout.
+ *  4. Wire up various data bits in UI.
+ *  5. Pull data out of mockup in JS layer.
+ */
+html, body {
+	height: 100%;
+}
+
+h1, h2, h3, h4, h5 {
+	font-weight: 600;
+}
+
+.wrapper {
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin: 0 auto -200px;
+}
+
+.sticky {
+	height: 200px;
+}
+
+.inner-wrap {
+	width: 960px;
+	margin: 0 auto;
+}
+
+.site-header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 120px;
+	z-index: 9999;
+	background-color: #2b2e35;
+}
+
+.site-header .inner-wrap {
+	display: table;
+	height: 120px;
+}
+
+.site-header h1, .site-header ul {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.site-header h1 {
+	margin: 0;
+	font-weight: 600;
+	color: #fff;
+}
+
+.site-header ul {
+	font-size: 16px;
+	text-align: right;
+	color: #b2c4d8;
+}
+
+.site-header ul li {
+	padding-left: 7px;
+	padding-right: 7px;
+}
+
+.site-header .search {
+	color: #434f5b;
+}
+
+.site-header .account {
+	color: #6f8295;
+}
+
+.site-header ul button {
+	color: #aab5c0;
+	border: none;
+	background: none;
+	outline: none;
+}
+
+.site-header ul a:hover, .site-header ul button:hover, .site-header ul button.have-items
+	{
+	color: #b8d87f;
+}
+
+/* @TODO */
+.site-header ul button.have-items {
+	position: relative;
+}
+
+.site-header ul button.have-items:before {
+	position: absolute;
+	top: -5px;
+	right: 0;
+	z-index: 9;
+	content: '\f111';
+	display: block;
+	font-family: 'FontAwesome';
+	color: #fff;
+}
+
+.site-header ul button.have-items:after {
+	position: absolute;
+	top: -4px;
+	right: 3px;
+	z-index: 11;
+	content: attr(data-item-num);
+	display: block;
+	font-weight: bold;
+	font-size: 0.8em;
+	color: #2b2e35;
+}
+
+.site-toolbar, .site-toolbar * {
+	transition: all 0.5s;
+}
+
+.site-toolbar {
+	position: fixed;
+	top: 120px;
+	left: 0;
+	width: 100%;
+	height: 30px;
+	z-index: 9999;
+	background-color: #b8d87f;
+}
+
+.site-toolbar .notifications {
+	float: left;
+	width: 100%;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-right: 7px;
+	font-weight: 600;
+	text-align: right;
+	opacity: 0;
+}
+
+.site-toolbar .notifications span {
+	color: #434f5b;
+}
+
+.content-wrap {
+	position: relative;
+	padding-top: 30px;
+	padding-bottom: 30px;
+}
+
+.filter-grid {
+	position: fixed;
+	top: 150px;
+	left: 0;
+	z-index: 8999;
+	width: 100%;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	background-color: #434f5b;
+}
+
+.filter-grid .filter-cell {
+	float: left;
+	width: 25%;
+	padding: 7px;
+}
+
+.filter-grid select {
+	font-weight: 600;
+}
+
+.product-grid {
+	width: 100%;
+}
+
+.grid-product {
+	width: 25%;
+	padding: 7px;
+}
+
+.grid-product .img-name {
+	position: relative;
+	width: 100%;
+	height: 190px;
+	background-color: #fff;
+	background-size: cover;
+	background-position: center center;
+	background-repeat: no-repeat;
+	border: 1px solid #aab5c0;
+}
+
+.grid-product .img-name h4 {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	margin: 0;
+	padding-bottom: 15px;
+	padding-left: 15px;
+	padding-right: 15px;
+	padding-top: 15px;
+	font-size: 18px;
+	color: #2b2e35;
+	background-color: rgba(242, 242, 242, 0.8);
+}
+
+.grid-product .img-name img {
+	width: 100%;
+}
+
+.grid-product .price {
+	position: relative;
+	padding: 15px;
+	font-weight: bold;
+	background-color: #aab5c0;
+}
+
+.grid-product .add-to-cart {
+	position: absolute;
+	top: 7px;
+	right: 7px;
+	color: #fff;
+	background-color: #434f5b;
+}
+
+.grid-product .add-to-cart:hover {
+	color: #b8d87f;
+	background-color: #2b2e35;
+}
+
+.cart {
+	position: fixed;
+	top: -100%;
+	z-index: 9599;
+	width: 100%;
+	height: 100%;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+	transition: top 0.5s;
+	color: #fff;
+	background-color: #434f5b;
+}
+
+.show-cart {
+	top: 150px;
+}
+
+.product-quantity {
+	position: relative;
+	width: 60px;
+	height: 40px;
+}
+
+.product-quantity .plus, .product-quantity .minus {
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	margin: 0;
+	font-size: 16px;
+	text-align: center;
+	color: #fff;
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+
+.product-quantity .plus:hover, .product-quantity .minus:hover {
+	color: #b8d87f;
+}
+
+.product-quantity .plus {
+	top: 0;
+	left: 0;
+}
+
+.product-quantity .minus {
+	bottom: 0;
+	left: 0;
+}
+
+.product-quantity input[type=number] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 35px;
+	height: 40px;
+	margin: 0;
+	padding: 0;
+	font-family: 'Source Sans Pro', sans-serif;
+	font-weight: 700;
+	font-size: 16px;
+	color: #fff;
+	background: none;
+	border: none;
+}
+
+.product-quantity input[type=number]::-webkit-inner-spin-button,
+	.product-quantity input[type=number]::-webkit-outer-spin-button {
+	margin: 0;
+}
+
+.edit-form {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.5s ease-out;
+}
+
+.edit-form.show {
+	max-height: 1000px;
+	/* 根据实际需要调整 */
+	transition: max-height 0.5s ease-out;
+}
+
+.product-image {
+	position: relative;
+	width: 100%;
+	/* 根据实际需要调整 */
+	height: auto;
+	/* 根据实际需要调整 */
+	transition: transform 0.5s ease-out;
+}
+
+.edit-form.show .product-image {
+	transform: translateY(0%);
+	transition: transform 0.5s ease-out;
+}
+
+.btn-custom-size {
+	font-size: 2.5em;
+	/* 調整字體大小 */
+}
+
+.toggle-button {
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+
+.fa-toggle-on, .fa-toggle-off {
+	font-size: 30px;
+	/* 调整图标的大小 */
+}
+
+.error {
+	border: 2px solid red;
+}
+
+#loadMoreContainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 10px;
+}
+
+#loadMoreContainer a {
+	display: inline-block;
+	padding: 10px 20px;
+	background-color: #f1f1f1;
+	border-radius: 20px;
+	text-decoration: none;
+	color: #333;
+	transition: background-color 0.3s ease;
+}
+
+#loadMoreContainer a:hover {
+	background-color: #ccc;
+}
+
+.fade-in {
+	opacity: 0;
+	transition: opacity 0.5s ease-in;
+}
+
+.fade-in.show {
+	opacity: 1;
+}
+
+.btn-primary.OneTap {
+	background-color: black;
+	color: white; /* 您可以選擇其他顏色 */
+}
