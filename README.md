@@ -11,7 +11,12 @@
 前台：發文、留言、按讚、收藏文章、文章看本分類、熱門、點閱排名。  
 後台：文章管理、檢舉處理、文章數據可視化分析。
 
-
+前台
+![image](https://github.com/AlbertLin60054/project-travel-master/blob/main/%E9%A6%96%E9%A0%81.jpg)
+後台
+![image](https://github.com/AlbertLin60054/project-travel-master/blob/main/%E5%BE%8C%E5%8F%B0.jpg)
+數據分析
+![image](https://github.com/AlbertLin60054/project-travel-master/blob/main/%E6%95%B8%E6%93%9A%E5%88%86%E6%9E%90.jpg)
 
 
 
